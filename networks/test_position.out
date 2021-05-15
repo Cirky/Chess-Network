@@ -1,0 +1,171 @@
+*Vertices 61
+1  "63" ic black fos 10
+2  "55" ic black fos 10
+3  "61" ic black fos 10
+4  "62" ic none fos 10
+5  "16" ic none fos 10
+6  "25" ic none fos 10
+7  "34" ic none fos 10
+8  "43" ic none fos 10
+9  "52" ic none fos 10
+10  "54" ic black fos 10
+11  "60" ic black fos 10
+12  "51" ic none fos 10
+13  "53" ic black fos 10
+14  "59" ic black fos 10
+15  "35" ic black fos 10
+16  "45" ic black fos 10
+17  "50" ic black fos 10
+18  "58" ic black fos 10
+19  "23" ic none fos 10
+20  "30" ic none fos 10
+21  "37" ic none fos 10
+22  "44" ic none fos 10
+23  "49" ic black fos 10
+24  "56" ic black fos 10
+25  "48" ic black fos 10
+26  "57" ic none fos 10
+27  "46" ic none fos 10
+28  "47" ic none fos 10
+29  "41" ic none fos 10
+30  "40" ic none fos 10
+31  "42" ic none fos 10
+32  "28" ic none fos 10
+33  "39" ic none fos 10
+34  "26" ic white fos 10
+35  "27" ic white fos 10
+36  "3" ic none fos 10
+37  "9" ic white fos 10
+38  "11" ic none fos 10
+39  "13" ic white fos 10
+40  "18" ic none fos 10
+41  "19" ic none fos 10
+42  "20" ic none fos 10
+43  "29" ic none fos 10
+44  "31" ic none fos 10
+45  "36" ic none fos 10
+46  "33" ic none fos 10
+47  "21" ic white fos 10
+48  "4" ic white fos 10
+49  "6" ic none fos 10
+50  "15" ic white fos 10
+51  "38" ic none fos 10
+52  "22" ic none fos 10
+53  "14" ic white fos 10
+54  "12" ic white fos 10
+55  "8" ic white fos 10
+56  "17" ic none fos 10
+57  "7" ic white fos 10
+58  "5" ic white fos 10
+59  "2" ic white fos 10
+60  "0" ic white fos 10
+61  "1" ic none fos 10
+*Arcs 108
+1 2 1 c defend
+1 3 1 c defend
+1 4 1 c attack
+3 5 1 c attack
+3 6 1 c attack
+3 7 1 c attack
+3 8 1 c attack
+3 9 1 c attack
+3 10 1 c defend
+11 12 1 c attack
+11 9 1 c attack
+11 13 1 c defend
+11 14 1 c defend
+11 3 1 c defend
+14 15 1 c defend
+14 8 1 c attack
+14 16 1 c defend
+14 17 1 c defend
+14 12 1 c attack
+14 9 1 c attack
+14 18 1 c defend
+14 11 1 c defend
+18 19 1 c attack
+18 20 1 c attack
+18 21 1 c attack
+18 22 1 c attack
+18 23 1 c defend
+18 12 1 c attack
+24 25 1 c defend
+24 26 1 c attack
+24 18 1 c defend
+2 27 1 c attack
+10 16 1 c defend
+10 28 1 c attack
+13 22 1 c attack
+13 27 1 c attack
+17 29 1 c attack
+17 8 1 c attack
+23 30 1 c attack
+23 31 1 c attack
+25 29 1 c attack
+16 32 1 c attack
+16 20 1 c attack
+16 15 1 c defend
+16 33 1 c attack
+16 12 1 c attack
+16 2 1 c defend
+16 11 1 c defend
+16 4 1 c attack
+15 34 1 c attack
+15 32 1 c attack
+35 36 1 c attack
+35 37 1 c defend
+35 38 1 c attack
+35 39 1 c defend
+35 40 1 c attack
+35 41 1 c attack
+35 42 1 c attack
+35 34 1 c defend
+35 32 1 c attack
+35 43 1 c attack
+35 20 1 c attack
+35 44 1 c attack
+35 7 1 c attack
+35 15 1 c attack
+35 45 1 c attack
+35 29 1 c attack
+35 16 1 c attack
+35 25 1 c attack
+34 46 1 c attack
+34 15 1 c attack
+47 48 1 c defend
+47 49 1 c attack
+47 38 1 c attack
+47 50 1 c defend
+47 35 1 c defend
+47 44 1 c attack
+47 45 1 c attack
+47 51 1 c attack
+50 52 1 c attack
+53 47 1 c defend
+53 19 1 c attack
+39 42 1 c attack
+39 52 1 c attack
+54 41 1 c attack
+54 47 1 c defend
+37 5 1 c attack
+37 40 1 c attack
+55 56 1 c attack
+57 58 1 c defend
+57 49 1 c attack
+57 50 1 c defend
+58 54 1 c defend
+58 53 1 c defend
+48 36 1 c attack
+48 58 1 c defend
+48 38 1 c attack
+48 54 1 c defend
+48 39 1 c defend
+59 37 1 c defend
+59 38 1 c attack
+59 42 1 c attack
+59 43 1 c attack
+59 51 1 c attack
+59 28 1 c attack
+60 61 1 c attack
+60 59 1 c defend
+60 55 1 c defend
