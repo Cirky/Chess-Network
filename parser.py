@@ -6,8 +6,8 @@ import snap
 import os
 import time
 import matplotlib.pyplot as plt
-import scipy
 import pygraphviz
+import scipy
 
 def read(file, path):
     G = nx.MultiDiGraph(name=file)
@@ -232,6 +232,8 @@ def read_network(file):
 
     node_colors = []
     edge_colors = []
+    labels = {}
+    node_size = []
     for node in G.nodes(data=True):
         if node[1]["color"] == "black":
             node_colors.append("brown")
@@ -239,6 +241,8 @@ def read_network(file):
             node_colors.append("yellow")
         if node[1]["color"] == "none":
             node_colors.append("grey")
+        node_size.append(100)
+        labels[node[0]] = chess.square_name(int(node[0]))
 
     for edge in G.edges(data=True):
         if edge[2]["type"] == "attack":
@@ -254,7 +258,8 @@ def read_network(file):
 
     pos = nx.nx_agraph.graphviz_layout(G)
 
-    nx.draw_networkx(G, pos=pos, node_color=node_colors, edge_color=edge_colors, with_labels=True)
+    nx.draw_networkx(G, font_size=6, node_size=node_size, pos=pos, arrowsize=5, node_color=node_colors, edge_color=edge_colors, with_labels=True, labels=labels)
+    plt.savefig("example_position_network.png")
     plt.show()
 
 
