@@ -4,6 +4,10 @@ import chess.pgn
 import networkx as nx
 import snap
 import os
+import time
+import matplotlib.pyplot as plt
+import scipy
+import pygraphviz
 
 def read(file, path):
     G = nx.MultiDiGraph(name=file)
@@ -26,17 +30,45 @@ def read(file, path):
     return G
 
 
-def parser(file):
-    game = chess.pgn.read_game(file)
+def parser(file, elo=400):
+    pgn = open(file)
     games = []
-    while game is not None:
-        game = chess.pgn.read_game(file)
-        games.append(game)
-      #  print(game.board())
+    offsets = []
+    while True:
+        offset = pgn.tell()
+        headers = chess.pgn.read_headers(pgn)
+        if headers is None:
+            break
+
+        elo_white = headers.get("WhiteElo")
+        elo_black = headers.get("BlackElo")
+
+        if not elo_white.isnumeric():
+            elo_white = 0
+        if not elo_black.isnumeric():
+            elo_black = 0
+
+        time_control = headers.get("TimeControl")
+
+        if not time_control[0:4].isnumeric():
+            if not time_control[0:3].isnumeric():
+                continue
+
+            if int(time_control[0:3]) < 180:
+                continue
+
+        if int(elo_black) >= elo or int(elo_white) >= elo:
+            offsets.append(offset)
+
+    for offset in offsets:
+        pgn.seek(offset)
+        games.append(chess.pgn.read_game(pgn))
+
     return games
 
 
-def create_support_network(board):
+
+def create_support_network(board, game_num, move_num):
     piece_map = board.piece_map()
     G = snap.TNEANet.New()
     G.AddStrAttrN("color")
@@ -83,11 +115,10 @@ def create_support_network(board):
                 type_dict_edges[edge.GetId()] = "attack"
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
-    G.SavePajek("networks/test_support.out", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+    G.SavePajek("networks/lichess/support_" + str(game_num) + "-" + str(move_num) + ".out", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
 
-    return G
 
-def create_mobility_network(board):
+def create_mobility_network(board, game_num, move_num):
     piece_map = board.piece_map()
     G = snap.TNEANet.New()
     G.AddStrAttrN("color")
@@ -134,11 +165,9 @@ def create_mobility_network(board):
                 type_dict_edges[edge.GetId()] = "attack"
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
-    G.SavePajek("networks/test_mobility.out", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+    G.SavePajek("networks/lichess/mobility_" + str(game_num) + "-" + str(move_num) + ".out", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
 
-    return G
-
-def create_position_network(board):
+def create_position_network(board, game_num, move_num):
   #  print(chess.SQUARES[3])
     piece_map = board.piece_map()
     G = snap.TNEANet.New()
@@ -184,19 +213,49 @@ def create_position_network(board):
                 type_dict_edges[edge.GetId()] = "attack"
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
-    G.SavePajek("networks/test_position.out", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
-
-    return G
+    G.SavePajek("networks/lichess/position_" + str(game_num) + "-" + str(move_num) + ".out", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
 
 
-def open_network(file):
+def read_network(file):
     G = read(file, "./networks/")
+    # for node in G.nodes(data=True):
+    #     print(node)
+    # for edge in G.edges(data=True):
+    #     print(edge)
+
+    # sub = []
+    # for node in G.nodes(data=True):
+    #     if node[1]["color"] == "white":
+    #         sub.append(node[0])
+    # G = G.subgraph(sub)
+
+
+    node_colors = []
+    edge_colors = []
     for node in G.nodes(data=True):
-        print(node)
+        if node[1]["color"] == "black":
+            node_colors.append("brown")
+        if node[1]["color"] == "white":
+            node_colors.append("yellow")
+        if node[1]["color"] == "none":
+            node_colors.append("grey")
+
     for edge in G.edges(data=True):
-        print(edge)
+        if edge[2]["type"] == "attack":
+         #   print(G.nodes[edge[1]])
+            n = G.nodes[edge[1]]
+            if n["color"] == "none":
+                edge_colors.append("blue")
+            else:
+                edge_colors.append("red")
 
+        if edge[2]["type"] == "defend":
+            edge_colors.append("green")
 
+    pos = nx.nx_agraph.graphviz_layout(G)
+
+    nx.draw_networkx(G, pos=pos, node_color=node_colors, edge_color=edge_colors, with_labels=True)
+    plt.show()
 
 
 # file = open("data/chess_com_games_precejgej.pgn")
@@ -220,6 +279,27 @@ def open_network(file):
 #   #  f.close()
 #     break
 
-open_network("test_support.out")
-#open_network("test_mobility.out")
-#open_network("test_position.out")
+#read_network("test_support.out")
+#read_network("test_mobility.out")
+read_network("test_position.out")
+
+
+def read_pgn_file(file, elo):
+    start = time.time()
+    games = parser(file, elo)
+    print("This took: ", time.time() - start)
+    print(len(games))
+    game_num = 0
+    for game in games:
+        board = game.board()
+        for move in game.mainline_moves():
+            board.push(move)
+            move_num = board.ply()
+          #  create_support_network(board, game_num, move_num)
+          #  create_mobility_network(board, game_num, move_num)
+            create_position_network(board, game_num, move_num)
+      #  print(game_num)
+        game_num += 1
+
+
+#read_pgn_file("data/lichess/lichess_db_standard_rated_2017-02.pgn", 2600)
