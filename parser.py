@@ -101,9 +101,6 @@ def create_support_network(board, game_num, move_num, result):
             G.AddNode(square)
             G.AddStrAttrDatN(square, color, "color")
 
-        # print()
-        # print(square, color)
-        # print(reach)
         for reachable_square in reach:
             if board.color_at(reachable_square) is None:
                 continue
@@ -153,6 +150,14 @@ def create_mobility_network(board, game_num, move_num, result):
             G.AddNode(square)
             G.AddStrAttrDatN(square, color, "color")
 
+        # dont count sideways pawn attacks if there are no pieces there
+        if board.piece_at(square).piece_type == chess.PAWN:
+            reach_c = reach.copy()
+            for reachable_square in reach:
+                if board.color_at(reachable_square) is None:
+                    reach_c.remove(reachable_square)
+            reach = reach_c
+
         # pawn movement
         if board.piece_at(square).piece_type == chess.PAWN:
             sqr = chess.square_name(square)
@@ -160,9 +165,18 @@ def create_mobility_network(board, game_num, move_num, result):
                 if chess.square_name(move.from_square) == sqr:  # and move.to_square not in reach:
                     reach.add(move.to_square)
 
+            board.turn = not board.turn  # legalne poteze dobi samu stran na potezi, zatu obrnem kdu je na vrsti
+            for move in board.legal_moves:
+                if chess.square_name(move.from_square) == sqr:  # and move.to_square not in reach:
+                    reach.add(move.to_square)
+            board.turn = not board.turn
+
         for reachable_square in reach:
             if board.color_at(reachable_square) is None:
                 s_color = "none"
+                # dont count sideways pawn attacks if there are no pieces there
+                if board.piece_at(square).piece_type == chess.PAWN:
+                    continue
             elif board.color_at(reachable_square):
                 s_color = "white"
             else:
@@ -216,15 +230,26 @@ def create_position_network(board, game_num, move_num, result):
             G.AddNode(square)
             G.AddStrAttrDatN(square, color, "color")
 
+        # dont count sideways pawn attacks if there are no pieces there
+        if board.piece_at(square).piece_type == chess.PAWN:
+            reach_c = reach.copy()
+            for reachable_square in reach:
+                if board.color_at(reachable_square) is None:
+                    reach_c.remove(reachable_square)
+            reach = reach_c
+
         # pawn movement
         if board.piece_at(square).piece_type == chess.PAWN:
             sqr = chess.square_name(square)
             for move in board.legal_moves:
                 if chess.square_name(move.from_square) == sqr: # and move.to_square not in reach:
                     reach.add(move.to_square)
-            for move in board.mirror().legal_moves:
+
+            board.turn = not board.turn # legalne poteze dobi samu stran na potezi, zatu obrnem kdu je na vrsti
+            for move in board.legal_moves:
                 if chess.square_name(move.from_square) == sqr: # and move.to_square not in reach:
                     reach.add(move.to_square)
+            board.turn = not board.turn
 
         for reachable_square in reach:
             if board.color_at(reachable_square) is None:
@@ -325,10 +350,6 @@ def read_network(file):
 #   #  f.close()
 #     break
 
-#read_network("test_support.out")
-#read_network("test_mobility.out")
-read_network("li_new/position_0-2.net")
-
 def get_information(file, elo):
     start = time.time()
     games, results = parser(file, elo)
@@ -379,3 +400,7 @@ def read_pgn_file(file, elo):
 
 
 #read_pgn_file("data/lichess/lichess_db_standard_rated_2017-02.pgn", 2700)
+
+#read_network("test_support.out")
+#read_network("test_mobility.out")
+#read_network("li_new/position_0-5.net")
