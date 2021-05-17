@@ -11,6 +11,7 @@ import scipy
 
 def read(file, path):
     G = nx.MultiDiGraph(name=file)
+    result = ""
     with open(os.path.join(path, file), 'r') as file:
         nodes = {}
         for line in file:
@@ -24,15 +25,19 @@ def read(file, path):
                 nodes[node[0]] = node[2].strip('"')
                 G.add_node(node[2].strip('"'), id=int(node[0]), color=node[4])
         for line in file:
+            if line.startswith("Result"):
+                rez = line.strip().split(' ')
+                result = rez[2]
+                break
             edge = line.strip().split(' ')
-           # print(edge)
             G.add_edge(nodes[edge[0]], nodes[edge[1]], type=edge[4])
-    return G
+    return G, result
 
 
 def parser(file, elo=400):
     pgn = open(file)
     games = []
+    results = []
     offsets = []
     while True:
         offset = pgn.tell()
@@ -59,12 +64,19 @@ def parser(file, elo=400):
 
         if int(elo_black) >= elo or int(elo_white) >= elo:
             offsets.append(offset)
+            result = headers.get("Result")
+            if result == "1-0":
+                results.append("white")
+            elif result == "0-1":
+                results.append("black")
+            else:
+                results.append("draw")
 
     for offset in offsets:
         pgn.seek(offset)
         games.append(chess.pgn.read_game(pgn))
 
-    return games
+    return games, results
 
 
 
@@ -115,7 +127,7 @@ def create_support_network(board, game_num, move_num):
                 type_dict_edges[edge.GetId()] = "attack"
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
-    G.SavePajek("networks/lichess/support_" + str(game_num) + "-" + str(move_num) + ".out", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+    G.SavePajek("networks/lichess/support_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
 
 
 def create_mobility_network(board, game_num, move_num):
@@ -165,9 +177,9 @@ def create_mobility_network(board, game_num, move_num):
                 type_dict_edges[edge.GetId()] = "attack"
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
-    G.SavePajek("networks/lichess/mobility_" + str(game_num) + "-" + str(move_num) + ".out", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+    G.SavePajek("networks/lichess/mobility_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
 
-def create_position_network(board, game_num, move_num):
+def create_position_network(board, game_num, move_num, result):
   #  print(chess.SQUARES[3])
     piece_map = board.piece_map()
     G = snap.TNEANet.New()
@@ -213,11 +225,13 @@ def create_position_network(board, game_num, move_num):
                 type_dict_edges[edge.GetId()] = "attack"
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
-    G.SavePajek("networks/lichess/position_" + str(game_num) + "-" + str(move_num) + ".out", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
-
+    G.SavePajek("networks/li_new/position_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+    f = open("networks/li_new/position_" + str(game_num) + "-" + str(move_num) + ".net", "a")
+    f.write("Result = " + result)
+    f.close()
 
 def read_network(file):
-    G = read(file, "./networks/")
+    G, result = read(file, "./networks/")
     # for node in G.nodes(data=True):
     #     print(node)
     # for edge in G.edges(data=True):
@@ -286,25 +300,39 @@ def read_network(file):
 
 #read_network("test_support.out")
 #read_network("test_mobility.out")
-read_network("test_position.out")
+#read_network("test_position.out")
 
+def get_information(file, elo):
+    start = time.time()
+    games, results = parser(file, elo)
+    print("This took: ", time.time() - start)
+    print(len(games))
+    move_num = 0
+    for game in games:
+        for move in game.mainline_moves():
+            move_num += 1
+    print(move_num)
+
+
+#get_information("data/lichess/lichess_db_standard_rated_2017-02.pgn", 2600)
 
 def read_pgn_file(file, elo):
     start = time.time()
-    games = parser(file, elo)
+    games, results = parser(file, elo)
     print("This took: ", time.time() - start)
     print(len(games))
     game_num = 0
     for game in games:
         board = game.board()
+        result = results[game_num]
         for move in game.mainline_moves():
             board.push(move)
             move_num = board.ply()
-          #  create_support_network(board, game_num, move_num)
-          #  create_mobility_network(board, game_num, move_num)
-            create_position_network(board, game_num, move_num)
-      #  print(game_num)
+          #  create_support_network(board, game_num, move_num,result)
+          #  create_mobility_network(board, game_num, move_num,result)
+            create_position_network(board, game_num, move_num, result)
+        print(game_num)
         game_num += 1
 
 
-#read_pgn_file("data/lichess/lichess_db_standard_rated_2017-02.pgn", 2600)
+#read_pgn_file("data/lichess/lichess_db_standard_rated_2017-02.pgn", 2700)
