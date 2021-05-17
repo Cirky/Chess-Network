@@ -80,7 +80,7 @@ def parser(file, elo=400):
 
 
 
-def create_support_network(board, game_num, move_num):
+def create_support_network(board, game_num, move_num, result):
     piece_map = board.piece_map()
     G = snap.TNEANet.New()
     G.AddStrAttrN("color")
@@ -128,9 +128,11 @@ def create_support_network(board, game_num, move_num):
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
     G.SavePajek("networks/lichess/support_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+    f = open("networks/lichess/support_" + str(game_num) + "-" + str(move_num) + ".net", "a")
+    f.write("Result = " + result)
+    f.close()
 
-
-def create_mobility_network(board, game_num, move_num):
+def create_mobility_network(board, game_num, move_num, result):
     piece_map = board.piece_map()
     G = snap.TNEANet.New()
     G.AddStrAttrN("color")
@@ -150,6 +152,13 @@ def create_mobility_network(board, game_num, move_num):
             color_dict_nodes[square] = color
             G.AddNode(square)
             G.AddStrAttrDatN(square, color, "color")
+
+        # pawn movement
+        if board.piece_at(square).piece_type == chess.PAWN:
+            sqr = chess.square_name(square)
+            for move in board.legal_moves:
+                if chess.square_name(move.from_square) == sqr:  # and move.to_square not in reach:
+                    reach.add(move.to_square)
 
         for reachable_square in reach:
             if board.color_at(reachable_square) is None:
@@ -178,6 +187,10 @@ def create_mobility_network(board, game_num, move_num):
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
     G.SavePajek("networks/lichess/mobility_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+    f = open("networks/lichess/mobility_" + str(game_num) + "-" + str(move_num) + ".net", "a")
+    f.write("Result = " + result)
+    f.close()
+
 
 def create_position_network(board, game_num, move_num, result):
   #  print(chess.SQUARES[3])
@@ -195,12 +208,23 @@ def create_position_network(board, game_num, move_num, result):
             color = "white"
         else:
             color = "black"
+
         reach = board.attacks(square)
         if not G.IsNode(square):
             label_dict_nodes[square] = str(square)
             color_dict_nodes[square] = color
             G.AddNode(square)
             G.AddStrAttrDatN(square, color, "color")
+
+        # pawn movement
+        if board.piece_at(square).piece_type == chess.PAWN:
+            sqr = chess.square_name(square)
+            for move in board.legal_moves:
+                if chess.square_name(move.from_square) == sqr: # and move.to_square not in reach:
+                    reach.add(move.to_square)
+            for move in board.mirror().legal_moves:
+                if chess.square_name(move.from_square) == sqr: # and move.to_square not in reach:
+                    reach.add(move.to_square)
 
         for reachable_square in reach:
             if board.color_at(reachable_square) is None:
@@ -248,6 +272,7 @@ def read_network(file):
     edge_colors = []
     labels = {}
     node_size = []
+    pos = {}
     for node in G.nodes(data=True):
         if node[1]["color"] == "black":
             node_colors.append("brown")
@@ -256,6 +281,7 @@ def read_network(file):
         if node[1]["color"] == "none":
             node_colors.append("grey")
         node_size.append(100)
+        pos[node[0]] = (int(node[0]) % 8, int(int(node[0]) / 8))
         labels[node[0]] = chess.square_name(int(node[0]))
 
     for edge in G.edges(data=True):
@@ -270,7 +296,8 @@ def read_network(file):
         if edge[2]["type"] == "defend":
             edge_colors.append("green")
 
-    pos = nx.nx_agraph.graphviz_layout(G)
+   # print(pos)
+   # pos = nx.nx_agraph.graphviz_layout(G)
 
     nx.draw_networkx(G, font_size=6, node_size=node_size, pos=pos, arrowsize=5, node_color=node_colors, edge_color=edge_colors, with_labels=True, labels=labels)
     plt.savefig("example_position_network.png")
@@ -300,7 +327,7 @@ def read_network(file):
 
 #read_network("test_support.out")
 #read_network("test_mobility.out")
-#read_network("test_position.out")
+read_network("li_new/position_0-2.net")
 
 def get_information(file, elo):
     start = time.time()
@@ -309,12 +336,28 @@ def get_information(file, elo):
     print(len(games))
     move_num = 0
     for game in games:
+        board = game.board()
         for move in game.mainline_moves():
+            # for square in board.piece_map():
+            #   #  print(board.piece_at(square).piece_type)
+            #     if board.piece_at(square).piece_type == chess.PAWN:
+            #         sqr = chess.square_name(square)
+            #       #  print(sqr)
+            #         for move in board.legal_moves:
+            #             if chess.square_name(move.from_square) == sqr:
+            #                 print(sqr)
+            #
+            # legal_moves = board.legal_moves
+            # board.push(move)
+            # print(legal_moves)
+            # move = chess.Move.from_uci("g2g4")
+            # print(move)
+            # print(move in board.legal_moves)
             move_num += 1
-    print(move_num)
+    #print(move_num)
 
 
-#get_information("data/lichess/lichess_db_standard_rated_2017-02.pgn", 2600)
+#get_information("data/precejgej/2021-05.pgn", 400)
 
 def read_pgn_file(file, elo):
     start = time.time()
