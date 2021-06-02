@@ -8,6 +8,7 @@ import time
 import matplotlib.pyplot as plt
 import pygraphviz
 import scipy
+from node2vec import Node2Vec
 
 def read(file, path):
     G = nx.MultiDiGraph(name=file)
@@ -206,7 +207,7 @@ def create_mobility_network(board, game_num, move_num, result):
     f.close()
 
 
-def create_position_network(board, game_num, move_num, result):
+def create_position_network(board, game_num, move_num, result, file):
   #  print(chess.SQUARES[3])
     piece_map = board.piece_map()
     G = snap.TNEANet.New()
@@ -274,8 +275,8 @@ def create_position_network(board, game_num, move_num, result):
                 type_dict_edges[edge.GetId()] = "attack"
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
-    G.SavePajek("networks/li_new/position_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
-    f = open("networks/li_new/position_" + str(game_num) + "-" + str(move_num) + ".net", "a")
+    G.SavePajek("networks/"+file+"/position_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+    f = open("networks/"+file+"/position_" + str(game_num) + "-" + str(move_num) + ".net", "a")
     f.write("Result = " + result)
     f.close()
 
@@ -392,9 +393,9 @@ def read_pgn_file(file, elo):
         for move in game.mainline_moves():
             board.push(move)
             move_num = board.ply()
-          #  create_support_network(board, game_num, move_num,result)
-          #  create_mobility_network(board, game_num, move_num,result)
-            create_position_network(board, game_num, move_num, result)
+          #  create_support_network(board, game_num, move_num, result, "li_new")
+          #  create_mobility_network(board, game_num, move_num, result, "li_new")
+            create_position_network(board, game_num, move_num, result, "li_new")
         print(game_num)
         game_num += 1
 
@@ -404,3 +405,34 @@ def read_pgn_file(file, elo):
 #read_network("test_support.out")
 #read_network("test_mobility.out")
 #read_network("li_new/position_0-5.net")
+
+def create_dummy():
+
+    fen1 = "8/6k1/5pp1/3Q4/6K1/8/8/8 w - - 0 1"
+    fen2 = "8/8/3p1k2/4b3/2Q5/3KP3/8/8 w - - 0 1"
+    fen3 = "8/Q7/3p1k2/4b1pp/8/3K4/8/1R6 w - - 0 1"
+
+    board1 = chess.Board(fen1)
+    board2 = chess.Board(fen2)
+    board3 = chess.Board(fen3)
+
+    create_position_network(board1, 1, 0, "white", "dummy")
+    create_position_network(board2, 2, 0, "white", "dummy")
+    create_position_network(board3, 3, 0, "white", "dummy")
+
+#create_dummy()
+#read_network("dummy/position_3-0.net")
+
+def test():
+    G, result = read("dummy/position_1-0.net", "./networks/")
+    G.add_node(420)
+    for node in G.nodes():
+        if node == 420:
+            continue
+        G.add_edge(420, node)
+
+    node2vec = Node2Vec(G, dimensions=64, walk_length=30, num_walks=200, workers=1)
+    model = node2vec.fit(window=5, min_count=1, batch_words=4)
+    print(model.wv.most_similar('420'))
+
+test()
