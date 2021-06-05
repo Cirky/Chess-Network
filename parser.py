@@ -406,7 +406,32 @@ def read_pgn_file(file, elo):
 #read_network("test_mobility.out")
 #read_network("li_new/position_0-5.net")
 
+
+def create_placement_network():
+
+    G = nx.DiGraph()
+    for char in ["a", "b", "c", "d", "e", "f", "g", "h"]:
+        for number in [1, 2, 3, 4, 5, 6, 7, 8]:
+            G.add_node("W_K" + char + str(number))
+            G.add_node("W_Q" + char + str(number))
+            G.add_node("W_R" + char + str(number))
+            G.add_node("W_B" + char + str(number))
+            G.add_node("W_N" + char + str(number))
+            G.add_node("B_K" + char + str(number))
+            G.add_node("B_Q" + char + str(number))
+            G.add_node("B_R" + char + str(number))
+            G.add_node("B_B" + char + str(number))
+            G.add_node("B_N" + char + str(number))
+            if number not in [1, 8]:
+                G.add_node("W_P" + char + str(number))
+                G.add_node("B_P" + char + str(number))
+
+    return G
+
+
 def create_dummy():
+
+    G = create_placement_network()
 
     fen1 = "8/6k1/5pp1/3Q4/6K1/8/8/8 w - - 0 1"
     fen2 = "8/8/3p1k2/4b3/2Q5/3KP3/8/8 w - - 0 1"
@@ -416,11 +441,62 @@ def create_dummy():
     board2 = chess.Board(fen2)
     board3 = chess.Board(fen3)
 
-    create_position_network(board1, 1, 0, "white", "dummy")
-    create_position_network(board2, 2, 0, "white", "dummy")
-    create_position_network(board3, 3, 0, "white", "dummy")
+    boards = [board1, board2, board3]
 
-#create_dummy()
+    board_node = 1000
+    for board in boards:
+        G.add_node(board_node)
+        for square in board.piece_map():
+            piece = board.piece_at(square).symbol()
+            if piece == "k":
+                G.add_edge(board_node, "B_K" + chess.square_name(square))
+            elif piece == "K":
+                G.add_edge(board_node, "W_K" + chess.square_name(square))
+            elif piece == "q":
+                G.add_edge(board_node, "B_Q" + chess.square_name(square))
+            elif piece == "Q":
+                G.add_edge(board_node, "W_Q" + chess.square_name(square))
+            elif piece == "r":
+                G.add_edge(board_node, "B_R" + chess.square_name(square))
+            elif piece == "R":
+                G.add_edge(board_node, "W_R" + chess.square_name(square))
+            elif piece == "b":
+                G.add_edge(board_node, "B_B" + chess.square_name(square))
+            elif piece == "B":
+                G.add_edge(board_node, "W_B" + chess.square_name(square))
+            elif piece == "n":
+                G.add_edge(board_node, "B_N" + chess.square_name(square))
+            elif piece == "N":
+                G.add_edge(board_node, "W_N" + chess.square_name(square))
+            elif piece == "p":
+                G.add_edge(board_node, "B_P" + chess.square_name(square))
+            elif piece == "P":
+                G.add_edge(board_node, "W_P" + chess.square_name(square))
+
+        board_node += 1
+
+    node2vec = Node2Vec(G, dimensions=64, walk_length=1, num_walks=200, workers=1, p=0, q=1, seed=69)
+
+    start = time.time()
+    model = node2vec.fit(window=10, min_count=1, batch_words=4)
+    print("this took:", time.time() - start)
+
+    with open(os.path.join("output/", "embeddings"), 'wb') as file:
+        model.wv.save_word2vec_format(file)
+
+    for edge in G.edges():
+        if edge[0] == 1000:
+            print(edge)
+
+    for node, _ in model.wv.most_similar("1000"):
+        print(node)
+
+
+  #  create_position_network(board1, 1, 0, "white", "dummy")
+  #  create_position_network(board2, 2, 0, "white", "dummy")
+  #  create_position_network(board3, 3, 0, "white", "dummy")
+
+create_dummy()
 #read_network("dummy/position_3-0.net")
 
 def test():
@@ -432,7 +508,7 @@ def test():
         G.add_edge(420, node)
 
     node2vec = Node2Vec(G, dimensions=64, walk_length=30, num_walks=200, workers=1)
-    model = node2vec.fit(window=5, min_count=1, batch_words=4)
+    model = node2vec.fit(window=10, min_count=1, batch_words=4)
     print(model.wv.most_similar('420'))
 
-test()
+#test()
