@@ -159,3 +159,14 @@ def test():
     node2vec = Node2Vec(G, dimensions=64, walk_length=30, num_walks=200, workers=1)
     model = node2vec.fit(window=10, min_count=1, batch_words=4)
     print(model.wv.most_similar('420'))
+
+
+def save_game_data(games, results, filename):
+    with open(os.path.join("output", filename), 'wb') as file:
+        pickle.dump({"games": games, "results": results}, file)
+
+
+def load_game_data(filename):
+    with open(os.path.join("output", filename), 'rb') as file:
+        data = pickle.load(file)
+    return data["games"], data["results"]

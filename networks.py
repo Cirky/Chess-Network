@@ -60,7 +60,7 @@ def create_metaposition_network(games, results, progress=False):
                     G.add_edge(board_node, "B_P" + chess.square_name(square))
                 elif piece == "P":
                     G.add_edge(board_node, "W_P" + chess.square_name(square))
-            board_node = +1
+            board_node += 1
         game_num += 1
 
     return G, all_results
