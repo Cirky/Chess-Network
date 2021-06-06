@@ -2,7 +2,11 @@ import os
 import pickle
 from classifier import *
 
-X, y = read_and_parse_embeddings("embeddings")
+
+
+with open(os.path.join("output", "embeddings"), 'rb') as file:
+    data = pickle.load(file)
+X, y = parse_embeddings("embeddings")
 
 clf = logistic_regression()
 clf.train(X, y)

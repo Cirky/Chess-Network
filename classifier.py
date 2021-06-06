@@ -36,9 +36,7 @@ class logistic_regression:
             print("%0.2f accuracy with a standard deviation of %0.2f" % (scores.mean(), scores.std()))
         return scores
 
-def read_and_parse_embeddings(filename, path="output"):
-    with open(os.path.join(path, filename), 'rb') as file:
-        data = pickle.load(file)
+def parse_embeddings(data):
     X = []
     y = []
     for key, value in data.items():
