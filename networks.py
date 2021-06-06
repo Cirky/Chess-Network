@@ -8,7 +8,7 @@ import time
 import os
 from node2vec import Node2Vec
 
-def create_metaposition_network(games, results):
+def create_metaposition_network(games, results, progress=False):
     # start = time.time()
     # games, results = parser(file, elo)
     # print("This took: ", time.time() - start)
@@ -21,7 +21,8 @@ def create_metaposition_network(games, results):
     board_node = 0
     for game in games:
         board = game.board()
-
+        if progress:
+            print("Games Added:", str(game_num), "/", str(len(games)))
         if results[game_num] == "white":
             result = 1
         elif results[game_num] == "black":
