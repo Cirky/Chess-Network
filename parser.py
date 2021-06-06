@@ -35,7 +35,7 @@ def read(file, path):
     return G, result
 
 
-def parser(file, elo=400):
+def parser(file, elo=400, draws=False):
     pgn = open(file)
     games = []
     results = []
@@ -45,6 +45,10 @@ def parser(file, elo=400):
         headers = chess.pgn.read_headers(pgn)
         if headers is None:
             break
+
+        if not draws:
+            if headers.get("Result") == "1/2-1/2":
+                continue
 
         elo_white = headers.get("WhiteElo")
         elo_black = headers.get("BlackElo")
