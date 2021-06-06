@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import pygraphviz
 import scipy
 from node2vec import Node2Vec
+import pickle
 
 def read(file, path):
     G = nx.MultiDiGraph(name=file)
@@ -433,17 +434,20 @@ def create_dummy():
 
     G = create_placement_network()
 
-    fen1 = "8/6k1/5pp1/3Q4/6K1/8/8/8 w - - 0 1"
-    fen2 = "8/8/3p1k2/4b3/2Q5/3KP3/8/8 w - - 0 1"
-    fen3 = "8/Q7/3p1k2/4b1pp/8/3K4/8/1R6 w - - 0 1"
+    fen1 = "8/6k1/5pp1/3Q4/6K1/8/8/8 w - - 0 1" # 1-0
+    fen2 = "8/8/3p1k2/4b3/2Q5/3KP3/8/8 w - - 0 1" # 1-0
+    fen3 = "8/Q7/3p1k2/4b1pp/8/3K4/8/1R6 w - - 0 1" # 1-0
+    fen4 = "8/4k3/8/2q5/8/5N2/4P1K1/8 w - - 0 1" # 0-1
 
     board1 = chess.Board(fen1)
     board2 = chess.Board(fen2)
     board3 = chess.Board(fen3)
+    board4 = chess.Board(fen4)
 
-    boards = [board1, board2, board3]
+    boards = [board1, board2, board3, board4]
+    results = [1, 1, 1, -1]
 
-    board_node = 1000
+    board_node = 0
     for board in boards:
         G.add_node(board_node)
         for square in board.piece_map():
@@ -475,21 +479,31 @@ def create_dummy():
 
         board_node += 1
 
-    node2vec = Node2Vec(G, dimensions=64, walk_length=1, num_walks=200, workers=1, p=0, q=1, seed=69)
+    node2vec = Node2Vec(G, dimensions=64, walk_length=1, num_walks=200, workers=1, p=1, q=1, seed=69)
 
     start = time.time()
     model = node2vec.fit(window=10, min_count=1, batch_words=4)
     print("this took:", time.time() - start)
 
+    embeddings = {}
+    for board_num in range(board_node):
+        embeddings[board_num] = model.wv[str(board_num)]
+        embeddings["result_" + str(board_num)] = results[board_num]
+
     with open(os.path.join("output/", "embeddings"), 'wb') as file:
-        model.wv.save_word2vec_format(file)
+        pickle.dump(embeddings, file)
 
-    for edge in G.edges():
-        if edge[0] == 1000:
-            print(edge)
+    with open(os.path.join("output/", "embeddings"), 'rb') as file:
+        r = pickle.load(file)
+    print(r)
 
-    for node, _ in model.wv.most_similar("1000"):
-        print(node)
+
+   # for edge in G.edges():
+   #     if edge[0] == 0:
+  #          print(edge)
+
+ #   for node, _ in model.wv.most_similar("0"):
+  #      print(node)
 
 
   #  create_position_network(board1, 1, 0, "white", "dummy")
