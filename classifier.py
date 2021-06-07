@@ -3,6 +3,8 @@ from sklearn.model_selection import cross_val_score
 import os
 import pickle
 import numpy as np
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 
@@ -12,6 +14,7 @@ class logistic_regression:
 
     def __init__(self, solver="saga", random_state=0, max_iter=10000):
         self.classifier = LogisticRegression(random_state=random_state, solver=solver, max_iter=max_iter)
+        # self.classifier = make_pipeline(StandardScaler(), LogisticRegression(random_state=random_state, solver=solver, max_iter=max_iter))
 
     def train(self, X, y):
         if self.classifier is None:
@@ -42,8 +45,8 @@ class svm:
     classifier = None
     trained_classifier = None
 
-    def __init__(self, solver="saga", random_state=0, max_iter=10000):
-        self.classifier = SVC()
+    def __init__(self):
+        self.classifier = make_pipeline(StandardScaler(), SVC(gamma='auto'))
 
     def train(self, X, y):
         if self.classifier is None:
