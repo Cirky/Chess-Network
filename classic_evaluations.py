@@ -3,7 +3,7 @@ import chess.svg
 import chess.pgn
 
 
-def shannon(games, results, progress=False):
+def shannon(games, results, progress=False, last_moves_percentage=1):
     X = []
     y = []
     game_num = 0
@@ -20,8 +20,18 @@ def shannon(games, results, progress=False):
         if progress:
             print("Shannon game", game_num, "/", len(games) - 1)
 
+        last_moves_n = 0
+        for _ in game.mainline_moves():
+            last_moves_n += 1
+        last_moves_n = int(last_moves_n * (1 - last_moves_percentage))
+
         for move in game.mainline_moves():
             board.push(move)
+
+            if last_moves_n > 0:
+                last_moves_n -= 1
+                continue
+
             y.append(result)
             score = 0
             if board.turn == chess.WHITE:

@@ -34,7 +34,7 @@ def create_metaposition_network(games, results, progress=False, directed=True, a
             result = 0
 
         last_moves_n = 0
-        for i in game.mainline_moves():
+        for _ in game.mainline_moves():
             last_moves_n += 1
         last_moves_n = int(last_moves_n * (1 - last_moves_percentage))
 

@@ -15,9 +15,9 @@ games, results = load_game_data("games_2600")
 
 
 #G, all_results = create_metaposition_network(games, results, directed=False)
-G, all_results = create_metaposition_network(games, results, color_separated=True, last_moves_percentage=0.05)
+G, all_results = create_metaposition_network(games, results, color_separated=True, last_moves_percentage=0.1)
 
-embeddings = metaposition_node2vec(G, all_results, color_separated=True)
+embeddings = metaposition_node2vec(G, all_results, color_separated=True, num_walks=150)
 #
 X, y = parse_embeddings(embeddings)
 # print(len(X[1]))
