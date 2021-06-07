@@ -38,7 +38,7 @@ class logistic_regression:
             k = len(X) - 1
         scores = cross_val_score(self.classifier, X, y, cv=k)
         if output:
-            print("%0.2f accuracy with a standard deviation of %0.2f" % (scores.mean(), scores.std()))
+            print("%0.5f accuracy with a standard deviation of %0.5f" % (scores.mean(), scores.std()))
         return scores
 
 class svm:
@@ -70,7 +70,7 @@ class svm:
             k = len(X) - 1
         scores = cross_val_score(self.classifier, X, y, cv=k)
         if output:
-            print("%0.2f accuracy with a standard deviation of %0.2f" % (scores.mean(), scores.std()))
+            print("%0.5f accuracy with a standard deviation of %0.5f" % (scores.mean(), scores.std()))
         return scores
 
 def parse_embeddings(data):

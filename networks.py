@@ -8,7 +8,7 @@ import time
 import os
 from node2vec import Node2Vec
 
-def create_metaposition_network(games, results, progress=False, directed=True, advanced=False):
+def create_metaposition_network(games, results, progress=False, directed=True, advanced=False, color_separated=False, last_moves_percentage=1):
     # start = time.time()
     # games, results = parser(file, elo)
     # print("This took: ", time.time() - start)
@@ -36,7 +36,7 @@ def create_metaposition_network(games, results, progress=False, directed=True, a
         last_moves_n = 0
         for i in game.mainline_moves():
             last_moves_n += 1
-        last_moves_n = int(last_moves_n * 0.95)
+        last_moves_n = int(last_moves_n * (1 - last_moves_percentage))
 
         for move in game.mainline_moves():
             board.push(move)
@@ -45,33 +45,45 @@ def create_metaposition_network(games, results, progress=False, directed=True, a
                 continue
 
             all_results.append(result)
-            G.add_node(board_node)
+            if not color_separated:
+                G.add_node(board_node)
+            else:
+                white_node = str(board_node) + "W"
+                black_node = str(board_node) + "B"
+                G.add_node(white_node)
+                G.add_node(black_node)
             for square in board.piece_map():
                 piece = board.piece_at(square).symbol()
+                node = board_node
+                if color_separated:
+                    if board.piece_at(square).color == chess.WHITE:
+                        node = white_node
+                    else:
+                        node = black_node
                 if piece == "k":
-                    G.add_edge(board_node, "B_K" + chess.square_name(square))
+                    G.add_edge(node, "B_K" + chess.square_name(square))
                 elif piece == "K":
-                    G.add_edge(board_node, "W_K" + chess.square_name(square))
+                    G.add_edge(node, "W_K" + chess.square_name(square))
                 elif piece == "q":
-                    G.add_edge(board_node, "B_Q" + chess.square_name(square))
+                    G.add_edge(node, "B_Q" + chess.square_name(square))
                 elif piece == "Q":
-                    G.add_edge(board_node, "W_Q" + chess.square_name(square))
+                    G.add_edge(node, "W_Q" + chess.square_name(square))
                 elif piece == "r":
-                    G.add_edge(board_node, "B_R" + chess.square_name(square))
+                    G.add_edge(node, "B_R" + chess.square_name(square))
                 elif piece == "R":
-                    G.add_edge(board_node, "W_R" + chess.square_name(square))
+                    G.add_edge(node, "W_R" + chess.square_name(square))
                 elif piece == "b":
-                    G.add_edge(board_node, "B_B" + chess.square_name(square))
+                    G.add_edge(node, "B_B" + chess.square_name(square))
                 elif piece == "B":
-                    G.add_edge(board_node, "W_B" + chess.square_name(square))
+                    G.add_edge(node, "W_B" + chess.square_name(square))
                 elif piece == "n":
-                    G.add_edge(board_node, "B_N" + chess.square_name(square))
+                    G.add_edge(node, "B_N" + chess.square_name(square))
                 elif piece == "N":
-                    G.add_edge(board_node, "W_N" + chess.square_name(square))
+                    G.add_edge(node, "W_N" + chess.square_name(square))
                 elif piece == "p":
-                    G.add_edge(board_node, "B_P" + chess.square_name(square))
+                    G.add_edge(node, "B_P" + chess.square_name(square))
                 elif piece == "P":
-                    G.add_edge(board_node, "W_P" + chess.square_name(square))
+                    G.add_edge(node, "W_P" + chess.square_name(square))
             board_node += 1
         game_num += 1
 
@@ -144,6 +156,79 @@ def create_weighted_metaposition_network(games, results, progress=False):
         game_num += 1
 
     return G, all_results
+
+# def create_color_separated_metaposition_network(games, results, progress=False, directed=True, advanced=False, last_moves_percentage=1):
+#     # start = time.time()
+#     # games, results = parser(file, elo)
+#     # print("This took: ", time.time() - start)
+#     # print(len(games))
+#
+#     if advanced:
+#         G = create_advanced_placement_network(directed)
+#     else:
+#         G = create_placement_network(directed)
+#
+#     all_results = []
+#     game_num = 0
+#     board_node = 0
+#     for game in games:
+#         board = game.board()
+#         if progress:
+#             print("Games Added:", str(game_num), "/", str(len(games)))
+#         if results[game_num] == "white":
+#             result = 1
+#         elif results[game_num] == "black":
+#             result = -1
+#         else:
+#             result = 0
+#
+#         last_moves_n = 0
+#         # last_moves_n = len(game.mainline_moves())
+#         for _ in game.mainline_moves():
+#             last_moves_n += 1
+#         last_moves_n = int(last_moves_n * (1 - last_moves_percentage))
+#
+#         for move in game.mainline_moves():
+#             board.push(move)
+#             if last_moves_n > 0:
+#                 last_moves_n -= 1
+#                 continue
+#
+#             all_results.append(result)
+#             white_node = str(board_node) + "W"
+#             black_node = str(board_node) + "B"
+#             G.add_node(white_node)
+#             G.add_node(black_node)
+#             for square in board.piece_map():
+#                 piece = board.piece_at(square).symbol()
+#                 if piece == "k":
+#                     G.add_edge(black_node, "B_K" + chess.square_name(square))
+#                 elif piece == "K":
+#                     G.add_edge(white_node, "W_K" + chess.square_name(square))
+#                 elif piece == "q":
+#                     G.add_edge(black_node, "B_Q" + chess.square_name(square))
+#                 elif piece == "Q":
+#                     G.add_edge(white_node, "W_Q" + chess.square_name(square))
+#                 elif piece == "r":
+#                     G.add_edge(black_node, "B_R" + chess.square_name(square))
+#                 elif piece == "R":
+#                     G.add_edge(white_node, "W_R" + chess.square_name(square))
+#                 elif piece == "b":
+#                     G.add_edge(black_node, "B_B" + chess.square_name(square))
+#                 elif piece == "B":
+#                     G.add_edge(white_node, "W_B" + chess.square_name(square))
+#                 elif piece == "n":
+#                     G.add_edge(black_node, "B_N" + chess.square_name(square))
+#                 elif piece == "N":
+#                     G.add_edge(white_node, "W_N" + chess.square_name(square))
+#                 elif piece == "p":
+#                     G.add_edge(black_node, "B_P" + chess.square_name(square))
+#                 elif piece == "P":
+#                     G.add_edge(white_node, "W_P" + chess.square_name(square))
+#             board_node += 1
+#         game_num += 1
+#
+#     return G, all_results
 
 def create_placement_network(directed=True):
     if directed:
