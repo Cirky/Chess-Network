@@ -33,7 +33,74 @@ def create_metaposition_network(games, results, progress=False):
         last_moves_n = 0
         for i in game.mainline_moves():
             last_moves_n += 1
-        last_moves_n = int(last_moves_n * 0.5)
+        last_moves_n = int(last_moves_n * 0.9)
+
+        for move in game.mainline_moves():
+            board.push(move)
+            if last_moves_n > 0:
+                last_moves_n -= 1
+                continue
+
+            all_results.append(result)
+            G.add_node(board_node)
+            for square in board.piece_map():
+                piece = board.piece_at(square).symbol()
+                if piece == "k":
+                    G.add_edge(board_node, "B_K" + chess.square_name(square))
+                elif piece == "K":
+                    G.add_edge(board_node, "W_K" + chess.square_name(square))
+                elif piece == "q":
+                    G.add_edge(board_node, "B_Q" + chess.square_name(square))
+                elif piece == "Q":
+                    G.add_edge(board_node, "W_Q" + chess.square_name(square))
+                elif piece == "r":
+                    G.add_edge(board_node, "B_R" + chess.square_name(square))
+                elif piece == "R":
+                    G.add_edge(board_node, "W_R" + chess.square_name(square))
+                elif piece == "b":
+                    G.add_edge(board_node, "B_B" + chess.square_name(square))
+                elif piece == "B":
+                    G.add_edge(board_node, "W_B" + chess.square_name(square))
+                elif piece == "n":
+                    G.add_edge(board_node, "B_N" + chess.square_name(square))
+                elif piece == "N":
+                    G.add_edge(board_node, "W_N" + chess.square_name(square))
+                elif piece == "p":
+                    G.add_edge(board_node, "B_P" + chess.square_name(square))
+                elif piece == "P":
+                    G.add_edge(board_node, "W_P" + chess.square_name(square))
+            board_node += 1
+        game_num += 1
+
+    return G, all_results
+
+
+def create_weighted_metaposition_network(games, results, progress=False):
+    # start = time.time()
+    # games, results = parser(file, elo)
+    # print("This took: ", time.time() - start)
+    # print(len(games))
+
+    G = create_placement_network()
+
+    all_results = []
+    game_num = 0
+    board_node = 0
+    for game in games:
+        board = game.board()
+        if progress:
+            print("Games Added:", str(game_num), "/", str(len(games)))
+        if results[game_num] == "white":
+            result = 1
+        elif results[game_num] == "black":
+            result = -1
+        else:
+            result = 0
+
+        last_moves_n = 0
+        for i in game.mainline_moves():
+            last_moves_n += 1
+        last_moves_n = int(last_moves_n * 0.8)
 
         for move in game.mainline_moves():
             board.push(move)
