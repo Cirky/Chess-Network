@@ -30,9 +30,18 @@ def create_metaposition_network(games, results, progress=False):
         else:
             result = 0
 
+        last_moves_n = 0
+        for i in game.mainline_moves():
+            last_moves_n += 1
+        last_moves_n = int(last_moves_n * 0.5)
+
         for move in game.mainline_moves():
-            all_results.append(result)
             board.push(move)
+            if last_moves_n > 0:
+                last_moves_n -= 1
+                continue
+
+            all_results.append(result)
             G.add_node(board_node)
             for square in board.piece_map():
                 piece = board.piece_at(square).symbol()
