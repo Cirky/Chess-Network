@@ -3,15 +3,19 @@ import pickle
 from pgn_parser import *
 from embeddings import *
 from classifier import *
-
+import sys
+# print(sys.getrecursionlimit())
+# sys.setrecursionlimit(10000)
+# print(sys.getrecursionlimit())
+#
 # s = time.time()
-# games, results = parser("data/lichess/lichess_db_standard_rated_2017-02.pgn", elo=2700)
-# save_game_data(games, results, "games_2700")
+# games, results = parser("data/lichess/lichess_db_standard_rated_2017-02.pgn", elo=2600)
 # print("Igre smo sprocesirali v:", time.time() - s, " in imamo jih:", len(games))
+# save_game_data(games, results, "games_2600")
 
 
-games, results = load_game_data("games_2700")
-G, all_results = create_metaposition_network(games, results)
+games, results = load_game_data("games_2600")
+G, all_results = create_metaposition_network(games[:500], results, directed=True, advanced=True)
 
 
 embeddings = metaposition_node2vec(G, all_results)

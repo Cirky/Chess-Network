@@ -5,7 +5,7 @@ import pickle
 import os
 
 def metaposition_node2vec(G, results, write=False, filename="embeddings"):
-    node2vec = Node2Vec(G, dimensions=200, walk_length=2, num_walks=150, workers=1, p=1, q=1)
+    node2vec = Node2Vec(G, dimensions=300, walk_length=2, num_walks=150, workers=1, p=1, q=1, seed=69)
 
     start = time.time()
     model = node2vec.fit(window=10, min_count=1, batch_words=4)
