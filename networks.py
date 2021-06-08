@@ -10,6 +10,7 @@ from node2vec import Node2Vec
 
 def create_metaposition_network(games, results, progress=False, directed=True, advanced=False, color_separated=False, last_moves_percentage=1):
     # start = time.time()
+    
     # games, results = parser(file, elo)
     # print("This took: ", time.time() - start)
     # print(len(games))
