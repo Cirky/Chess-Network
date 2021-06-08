@@ -157,7 +157,7 @@ def test():
         G.add_edge(420, node)
 
     node2vec = Node2Vec(G, dimensions=64, walk_length=30, num_walks=200, workers=1)
-    model = node2vec.fit(window=10, min_count=1, batch_words=4)
+    model = node2vec.fit()
     print(model.wv.most_similar('420'))
 
 
