@@ -29,7 +29,7 @@ def read(file, path):
     return G, result
 
 
-def parser(file, elo=400, draws=False):
+def parser(file, elo=400, draws=False, time_control=True):
     pgn = open(file)
     games = []
     results = []
@@ -39,6 +39,9 @@ def parser(file, elo=400, draws=False):
         headers = chess.pgn.read_headers(pgn)
         if headers is None:
             break
+
+        if headers.get("Result") not in ["1-0", "0-1", "1/2-1/2"]:
+            continue
 
         if not draws:
             if headers.get("Result") == "1/2-1/2":
@@ -54,12 +57,13 @@ def parser(file, elo=400, draws=False):
 
         time_control = headers.get("TimeControl")
 
-        if not time_control[0:4].isnumeric():
-            if not time_control[0:3].isnumeric():
-                continue
+        if time_control:
+            if not time_control[0:4].isnumeric():
+                if not time_control[0:3].isnumeric():
+                    continue
 
-            if int(time_control[0:3]) < 180:
-                continue
+                if int(time_control[0:3]) < 180:
+                    continue
 
         if int(elo_black) >= elo or int(elo_white) >= elo:
             offsets.append(offset)

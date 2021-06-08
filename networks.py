@@ -269,6 +269,7 @@ def create_combined_metaposition_network(games, results, progress=False, directe
 
     G = create_placement_network(directed, multigraph=True)
     G = add_attack_network(G)
+    G = add_defence_network(G)
 
     all_results = []
     game_num = 0
@@ -315,12 +316,16 @@ def create_combined_metaposition_network(games, results, progress=False, directe
                 color = board.color_at(square)
                 G.add_edge(node, piece.symbol() + chess.square_name(square)) # placement
 
-                for attacked_square in board.attacks(square): # napadi
-                    if board.color_at(attacked_square) is None or board.color_at(attacked_square) is color:
+                for attacked_square in board.attacks(square):
+                    if board.color_at(attacked_square) is None:
                         continue
-                    attacked_piece = board.piece_at(attacked_square)
-                #    square_name = chess.square_name(attacked_square)
-                    G.add_edge(node, piece.symbol() + "->" + attacked_piece.symbol())
+                    if board.color_at(attacked_square) is color: #obrambe
+                        defended_piece = board.piece_at(attacked_square)
+                        G.add_edge(node, piece.symbol() + "->" + defended_piece.symbol())
+                    else: # napadi
+                        attacked_piece = board.piece_at(attacked_square)
+                    #    square_name = chess.square_name(attacked_square)
+                        G.add_edge(node, piece.symbol() + "->" + attacked_piece.symbol())
 
             board_node += 1
         game_num += 1
@@ -384,6 +389,20 @@ def add_attack_network2(G):
                     G.add_node(piece + "->" + piece2 + square_name)
     return G
 
+
+def add_defence_network(G):
+    for piece in ["K", "Q", "R", "B", "N", "P"]:
+        for piece2 in ["K", "Q", "R", "B", "N", "P"]:
+            if piece == "K" and piece2 == "K":
+                continue
+            G.add_node(piece + "->" + piece2)
+
+    for piece in ["k", "q", "r", "b", "n", "p"]:
+        for piece2 in ["k", "q", "r", "b", "n", "p"]:
+            if piece == "k" and piece2 == "k":
+                continue
+            G.add_node(piece + "->" + piece2)
+    return G
 
 def create_placement_network(directed=True, multigraph=False):
     if multigraph and directed:
