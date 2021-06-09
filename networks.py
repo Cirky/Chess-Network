@@ -10,9 +10,11 @@ from node2vec import Node2Vec
 import matplotlib.pyplot as plt
 
 
-def create_metaposition_network(games, results, progress=False, directed=True, advanced=False, color_separated=False,
-                                last_moves_percentage=1, boards=None):
-    if advanced:
+def create_metaposition_network(games, results, progress=False, directed=True, advanced=False, multiple=False,
+                                color_separated=False, last_moves_percentage=1, boards=None):
+    if multiple:
+        G = create_multiple_placement_network()
+    elif advanced:
         G = create_advanced_placement_network(directed)
     else:
         G = create_placement_network(directed)
@@ -433,6 +435,53 @@ def create_placement_network(directed=True, multigraph=False):
             G.add_node("r" + square_name)
             G.add_node("b" + square_name)
             G.add_node("n" + square_name)
+            if number not in [1, 8]:
+                G.add_node("P" + square_name)
+                G.add_node("p" + square_name)
+
+    return G
+
+def create_multiple_placement_network():
+    G = nx.MultiGraph()
+
+    for char in ["a", "b", "c", "d", "e", "f", "g", "h"]:
+        for number in [1, 2, 3, 4, 5, 6, 7, 8]:
+            square_name = char + str(number)
+            G.add_node("K" + square_name)
+            G.add_node("Q" + square_name)
+            for i in range(9):
+                G.add_edge("Q" + square_name, "Q" + square_name)
+
+            G.add_node("R" + square_name)
+            for i in range(5):
+                G.add_edge("R" + square_name, "R" + square_name)
+
+            G.add_node("B" + square_name)
+            for i in range(3):
+                G.add_edge("B" + square_name, "B" + square_name)
+
+            G.add_node("N" + square_name)
+            for i in range(3):
+                G.add_edge("N" + square_name, "N" + square_name)
+
+            G.add_node("k" + square_name)
+
+            G.add_node("q" + square_name)
+            for i in range(9):
+                G.add_edge("q" + square_name, "q" + square_name)
+
+            G.add_node("r" + square_name)
+            for i in range(5):
+                G.add_edge("r" + square_name, "r" + square_name)
+
+            G.add_node("b" + square_name)
+            for i in range(3):
+                G.add_edge("b" + square_name, "b" + square_name)
+
+            G.add_node("n" + square_name)
+            for i in range(3):
+                G.add_edge("n" + square_name, "n" + square_name)
+
             if number not in [1, 8]:
                 G.add_node("P" + square_name)
                 G.add_node("p" + square_name)

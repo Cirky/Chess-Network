@@ -14,6 +14,8 @@ class Log:
     ADVANCED = "Advanced"
     POSITION_NETWORKS = "Position Networks"
     WEIGHTED = "Weighted"
+    MULTIPLE = "Multiple"
+    ML_ALG = "ML Alg."
 
     def __init__(self, path="logs", filename="log.txt"):
         self.filename = os.path.join(path, filename)

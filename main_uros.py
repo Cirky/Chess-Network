@@ -21,10 +21,10 @@ last_moves_percentage = 0.05
 games, results = load_game_data(game_data_file)
 print(len(games), Counter(results))
 boards = []
-G, all_results = create_metaposition_network(games, results, color_separated=True,
+G, all_results = create_metaposition_network(games, results, color_separated=True, multiple=True,
                                              last_moves_percentage=last_moves_percentage)
 
-embeddings = metaposition_node2vec(G, all_results, color_separated=True, num_walks=num_walks)
+embeddings = metaposition_node2vec(G, all_results, color_separated=True, num_walks=num_walks, walk_length=10)
 
 X, y = parse_embeddings(embeddings)
 print(Counter(y))
@@ -45,7 +45,9 @@ scores = clf.cross_validate(X, y, k=5, output=True)
 log = Log(filename="log_uros.txt")
 log.write((log.GAME_DATA, game_data_file),
           (log.LAST_MOVES, last_moves_percentage),
+          (log.ML_ALG, clf.get_name()),
           log.COLOR_SEPARATED,
+          log.MULTIPLE,
           # log.WEIGHTED,
           # log.POSITION_NETWORKS,
           (log.WALKS, num_walks),
