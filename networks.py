@@ -322,12 +322,16 @@ def create_combined_metaposition_network(games, results, progress=False, directe
                 color = board.color_at(square)
                 G.add_edge(node, piece.symbol() + chess.square_name(square))  # placement
 
-                for attacked_square in board.attacks(square):  # napadi
-                    if board.color_at(attacked_square) is None or board.color_at(attacked_square) is color:
+                for attacked_square in board.attacks(square):
+                    if board.color_at(attacked_square) is None:
                         continue
-                    attacked_piece = board.piece_at(attacked_square)
+                    if board.color_at(attacked_square) is color: #obrambe
+                        defended_piece = board.piece_at(attacked_square)
+                        G.add_edge(node, piece.symbol() + "->" + defended_piece.symbol())
+                    else: # napadi
+                        attacked_piece = board.piece_at(attacked_square)
                     #    square_name = chess.square_name(attacked_square)
-                    G.add_edge(node, piece.symbol() + "->" + attacked_piece.symbol())
+                        G.add_edge(node, piece.symbol() + "->" + attacked_piece.symbol())
 
             board_node += 1
         game_num += 1
@@ -800,6 +804,7 @@ def create_mobility_network(board, game_num, move_num, result):
 #
 
 def create_dummy():
+
     G = create_placement_network()
 
     fen1 = "8/6k1/5pp1/3Q4/6K1/8/8/8 w - - 0 1"  # 1-0

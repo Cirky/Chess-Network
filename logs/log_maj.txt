@@ -1,0 +1,6 @@
+2021/06/08 18:14:33;Game Data;games_2700_2019;Perc. of last moves;0.05;Color Separated;;Walks;200;Accuracy;0.6881381429101118;Std. Dev.;0.02973853236182147;
+2021/06/08 18:26:40;Game Data;games_2700_2019;Perc. of last moves;0.05;Color Separated;;Walks;200;Accuracy;0.7538528245386351;Std. Dev.;0.006754604535290997;
+2021/06/08 18:31:44;Game Data;games_2700_2019;Perc. of last moves;0.05;Color Separated;;Walks;300;Accuracy;0.6867609513215742;Std. Dev.;0.022665700449356594;
+2021/06/08 19:13:46;Game Data;games_2600_2019;Perc. of last moves;0.05;Color Separated;;Walks;200;Accuracy;0.7587397104740278;Std. Dev.;0.004578673416475904;
+2021/06/08 22:44:10;Game Data;karpov;Perc. of last moves;0.05;Color Separated;;Walks;200;Accuracy;0.7417628388634915;Std. Dev.;0.008833056834375597;
+2021/06/08 22:49:52;Game Data;games_2700_2019;Perc. of last moves;0.05;Color Separated;;Walks;200;Accuracy;0.7472940226484225;Std. Dev.;0.019163819156706157;
