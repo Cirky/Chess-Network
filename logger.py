@@ -13,6 +13,7 @@ class Log:
     STD_DEV = "Std. Dev."
     ADVANCED = "Advanced"
     POSITION_NETWORKS = "Position Networks"
+    WEIGHTED = "Weighted"
 
     def __init__(self, path="logs", filename="log.txt"):
         self.filename = os.path.join(path, filename)
