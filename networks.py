@@ -6,6 +6,7 @@ import networkx as nx
 import pickle
 import time
 import os
+import math
 from node2vec import Node2Vec
 import matplotlib.pyplot as plt
 
@@ -36,7 +37,7 @@ def create_metaposition_network(games, results, progress=False, directed=True, a
         last_moves_n = 0
         for _ in game.mainline_moves():
             last_moves_n += 1
-        last_moves_n = int(last_moves_n * (1 - last_moves_percentage))
+        last_moves_n = math.ceil(last_moves_n * (1 - last_moves_percentage))
 
         for move in game.mainline_moves():
             board.push(move)
@@ -245,7 +246,7 @@ def create_attack_metaposition_network(games, results, progress=False, directed=
         last_moves_n = 0
         for _ in game.mainline_moves():
             last_moves_n += 1
-        last_moves_n = int(last_moves_n * (1 - last_moves_percentage))
+        last_moves_n = math.ceil(last_moves_n * (1 - last_moves_percentage))
 
         for move in game.mainline_moves():
             board.push(move)
@@ -308,7 +309,7 @@ def create_combined_metaposition_network(games, results, progress=False, directe
         last_moves_n = 0
         for _ in game.mainline_moves():
             last_moves_n += 1
-        last_moves_n = int(last_moves_n * (1 - last_moves_percentage))
+        last_moves_n = math.ceil(last_moves_n * (1 - last_moves_percentage))
 
         for move in game.mainline_moves():
             board.push(move)

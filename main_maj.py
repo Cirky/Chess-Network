@@ -9,50 +9,51 @@ import sys
 sys.setrecursionlimit(100000)
 
 # s = time.time()
-# games, results = parser("data/lichess/Karpov.pgn", elo=0, time_control=False)
-# save_game_data(games, results, "karpov")
+# games, results = parser("data/lichess/CCRL-4040.pgn", elo=0, time_control=False)
+# save_game_data(games, results, "chess-engines")
 # print("Igre smo sprocesirali v:", time.time() - s, " in imamo jih:", len(games))
-#
+
 # s = time.time()
-# games, results = parser("data/lichess/lichess_db_standard_rated_2019-10.pgn", elo=2700)
-# save_game_data(games, results, "games_2700_2019")
+# games, results = parser("data/lichess/lichess_db_standard_rated_2019-10.pgn", elo=2500)
+# save_game_data(games, results, "games_2500_2019")
 # print("Igre smo sprocesirali v:", time.time() - s, " in imamo jih:", len(games))
 
 
 #games_file = "karpov"
-games_file = "games_2700_2019"
-p = 0.05
+games_file = "chess-engines"
+p = 0.1
 num_walks = 200
 games, results = load_game_data(games_file)
+num_of_games = 10000
 
 #print(results)
 
 # G, all_results = create_metaposition_network(games, results, last_moves_percentage=0.05)
 # embeddings = metaposition_node2vec(G, all_results, num_walks=200)
 
-games = games[:1845]
+games = games[:num_of_games]
 
 G, all_results = create_combined_metaposition_network(games, results, color_separated=True, last_moves_percentage=p)
-embeddings = metaposition_node2vec(G, all_results, color_separated=True, num_walks=num_walks)
+embeddings = metaposition_node2vec(G, all_results, color_separated=True, num_walks=num_walks, dimensions=300)
 
 X, y = parse_embeddings(embeddings)
-clf = logistic_regression()
+clf = neural_network()
 
-scores = clf.cross_validate(X, y, k=5, output=True)
+scores = clf.cross_validate(X, y, k=10, output=True)
 #print(clf.cross_validate(X, y, k=5, output=True))
 
 
 s = time.time()
 X, y = shannon(games, results, last_moves_percentage=p)
 print("Shannon:", time.time() - s)
-
-clf = logistic_regression()
-print(clf.cross_validate(X, y, k=5, output=True))
+print(clf.cross_validate(X, y, k=10, output=True))
 
 log = Log(filename="log_maj.txt")
 log.write((log.GAME_DATA, games_file),
+          ("Number of games", num_of_games),
           (log.LAST_MOVES, p),
           log.COLOR_SEPARATED,
           (log.WALKS, num_walks),
+          ("Classifier", clf.get_name()),
           (log.ACCURACY, scores.mean()),
           (log.STD_DEV, scores.std()))

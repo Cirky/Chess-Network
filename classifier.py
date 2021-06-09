@@ -76,6 +76,9 @@ class sgd(Classifier):
     def __init__(self, loss="hinge"):
         self.classifier = SGDClassifier(loss=loss, penalty="l2", max_iter=10000)
 
+    def get_name(self):
+        return "SGD"
+
 class bayes(Classifier):
     classifier = None
     trained_classifier = None
@@ -90,7 +93,7 @@ class random_forest(Classifier):
     classifier = None
     trained_classifier = None
 
-    def __init__(self, max_depth=2):
+    def __init__(self, max_depth=None):
         self.classifier = RandomForestClassifier(max_depth=max_depth, random_state=0)
 
     def get_name(self):

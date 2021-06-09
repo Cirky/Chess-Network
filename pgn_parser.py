@@ -34,6 +34,7 @@ def parser(file, elo=400, draws=False, time_control=True):
     games = []
     results = []
     offsets = []
+    counter = 0
     while True:
         offset = pgn.tell()
         headers = chess.pgn.read_headers(pgn)
@@ -50,9 +51,9 @@ def parser(file, elo=400, draws=False, time_control=True):
         elo_white = headers.get("WhiteElo")
         elo_black = headers.get("BlackElo")
 
-        if not elo_white.isnumeric():
+        if elo_white is None or not elo_white.isnumeric():
             elo_white = 0
-        if not elo_black.isnumeric():
+        if elo_black is None or not elo_black.isnumeric():
             elo_black = 0
 
         time_control = headers.get("TimeControl")
@@ -75,6 +76,9 @@ def parser(file, elo=400, draws=False, time_control=True):
             else:
                 print(result)
                 results.append("draw")
+            counter += 1
+        if counter > 50000:
+            break
 
     for offset in offsets:
         pgn.seek(offset)
