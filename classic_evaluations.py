@@ -13,7 +13,7 @@ def shannon(games, results, progress=False, last_moves_percentage=1):
         if results[game_num] == "white":
             result = 1
         elif results[game_num] == "black":
-            result = -1
+            result = 0 #-1
         else:
             result = 0
 

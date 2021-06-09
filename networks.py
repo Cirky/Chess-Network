@@ -7,8 +7,11 @@ import pickle
 import time
 import os
 from node2vec import Node2Vec
+import matplotlib.pyplot as plt
 
-def create_metaposition_network(games, results, progress=False, directed=True, advanced=False, color_separated=False, last_moves_percentage=1):
+
+def create_metaposition_network(games, results, progress=False, directed=True, advanced=False, color_separated=False,
+                                last_moves_percentage=1, boards=None):
     if advanced:
         G = create_advanced_placement_network(directed)
     else:
@@ -38,6 +41,9 @@ def create_metaposition_network(games, results, progress=False, directed=True, a
             if last_moves_n > 0:
                 last_moves_n -= 1
                 continue
+
+            if board is not None:
+                boards.append(board.copy())
 
             all_results.append(result)
             if not color_separated:
@@ -128,6 +134,7 @@ def create_weighted_metaposition_network(games, results, progress=False):
 
     return G, all_results
 
+
 # def create_color_separated_metaposition_network(games, results, progress=False, directed=True, advanced=False, last_moves_percentage=1):
 #     # start = time.time()
 #     # games, results = parser(file, elo)
@@ -202,10 +209,10 @@ def create_weighted_metaposition_network(games, results, progress=False):
 #     return G, all_results
 
 
-def create_attack_metaposition_network(games, results, progress=False, directed=True, advanced=False, color_separated=False, last_moves_percentage=1):
-
+def create_attack_metaposition_network(games, results, progress=False, directed=True, advanced=False,
+                                       color_separated=False, last_moves_percentage=1):
     G = create_attack_network(directed)
-   # G = add_attack_network2(nx.MultiDiGraph())
+    # G = add_attack_network2(nx.MultiDiGraph())
 
     all_results = []
     game_num = 0
@@ -254,7 +261,7 @@ def create_attack_metaposition_network(games, results, progress=False, directed=
                     if board.color_at(attacked_square) is None or board.color_at(attacked_square) is color:
                         continue
                     attacked_piece = board.piece_at(attacked_square)
-                    #square_name = chess.square_name(attacked_square)
+                    # square_name = chess.square_name(attacked_square)
                     G.add_edge(node, piece.symbol() + "->" + attacked_piece.symbol())
 
             board_node += 1
@@ -265,8 +272,8 @@ def create_attack_metaposition_network(games, results, progress=False, directed=
     return G, all_results
 
 
-def create_combined_metaposition_network(games, results, progress=False, directed=True, advanced=False, color_separated=False, last_moves_percentage=1):
-
+def create_combined_metaposition_network(games, results, progress=False, directed=True, advanced=False,
+                                         color_separated=False, last_moves_percentage=1):
     G = create_placement_network(directed, multigraph=True)
     G = add_attack_network(G)
 
@@ -313,19 +320,20 @@ def create_combined_metaposition_network(games, results, progress=False, directe
                         node = black_node
                 piece = board.piece_at(square)
                 color = board.color_at(square)
-                G.add_edge(node, piece.symbol() + chess.square_name(square)) # placement
+                G.add_edge(node, piece.symbol() + chess.square_name(square))  # placement
 
-                for attacked_square in board.attacks(square): # napadi
+                for attacked_square in board.attacks(square):  # napadi
                     if board.color_at(attacked_square) is None or board.color_at(attacked_square) is color:
                         continue
                     attacked_piece = board.piece_at(attacked_square)
-                #    square_name = chess.square_name(attacked_square)
+                    #    square_name = chess.square_name(attacked_square)
                     G.add_edge(node, piece.symbol() + "->" + attacked_piece.symbol())
 
             board_node += 1
         game_num += 1
 
     return G, all_results
+
 
 def create_attack_network(directed=True):
     if directed:
@@ -345,8 +353,8 @@ def create_attack_network(directed=True):
                 continue
             G.add_node(piece + "->" + piece2)
 
-  #  for n in G.nodes():
-  #      print(n)
+    #  for n in G.nodes():
+    #      print(n)
     return G
 
 
@@ -363,6 +371,7 @@ def add_attack_network(G):
                 continue
             G.add_node(piece + "->" + piece2)
     return G
+
 
 def add_attack_network2(G):
     for piece in ["K", "Q", "R", "B", "N", "P"]:
@@ -468,11 +477,120 @@ def create_advanced_placement_network(directed=True):
                 helper_adv(G, "P", square_name, "W_P" + square_name)
                 helper_adv(G, "p", square_name, "B_P" + square_name)
 
-   # print(len(G.nodes()), len(G.edges()))
+    # print(len(G.nodes()), len(G.edges()))
     return G
 
-#create_advanced_placement_network()
 
+# create_advanced_placement_network()
+def create_position_networks(games, results, progress=False, color_separated=False,
+                                last_moves_percentage=1):
+    networks = []
+    all_results = []
+    game_num = 0
+    board_node = 0
+    for game in games:
+        board = game.board()
+        if progress:
+            print("Games Added:", str(game_num), "/", str(len(games)))
+        if results[game_num] == "white":
+            result = 1
+        elif results[game_num] == "black":
+            result = -1
+        else:
+            result = 0
+
+        last_moves_n = 0
+        for _ in game.mainline_moves():
+            last_moves_n += 1
+        last_moves_n = int(last_moves_n * (1 - last_moves_percentage))
+
+        for move in game.mainline_moves():
+            board.push(move)
+            if last_moves_n > 0:
+                last_moves_n -= 1
+                continue
+
+            all_results.append(result)
+            G = create_position_network(board, board_node, color_separated)
+            networks.append(G)
+            board_node += 1
+        game_num += 1
+
+    return networks, all_results
+
+def create_position_network(board, board_node, color_separated=False):
+    piece_map = board.piece_map()
+    G = nx.DiGraph()
+    node = str(board_node)
+    if not color_separated:
+        G.add_node(node)
+    else:
+        white_node = node + "W"
+        black_node = node + "B"
+        G.add_node(white_node)
+        G.add_node(black_node)
+
+    for square in piece_map:
+        reach = board.attacks(square)
+        square_name = chess.square_name(square)
+        if square not in G:
+            G.add_node(square_name)
+            if not color_separated:
+                G.add_edge(node, square_name)
+            else:
+                if board.color_at(square) == chess.WHITE:
+                    G.add_edge(white_node, square_name)
+                else:
+                    G.add_edge(black_node, square_name)
+
+        # dont count sideways pawn attacks if there are no pieces there
+        if board.piece_at(square).piece_type == chess.PAWN:
+            reach_c = reach.copy()
+            for reachable_square in reach:
+                if board.color_at(reachable_square) is None:
+                    reach_c.remove(reachable_square)
+            reach = reach_c
+
+        # pawn movement
+        if board.piece_at(square).piece_type == chess.PAWN:
+            sqr = chess.square_name(square)
+            for move in board.legal_moves:
+                if chess.square_name(move.from_square) == sqr:  # and move.to_square not in reach:
+                    reach.add(move.to_square)
+
+            board.turn = not board.turn  # legalne poteze dobi samu stran na potezi, zatu obrnem kdu je na vrsti
+            for move in board.legal_moves:
+                if chess.square_name(move.from_square) == sqr:  # and move.to_square not in reach:
+                    reach.add(move.to_square)
+            board.turn = not board.turn
+
+        for reachable_square in reach:
+            if reachable_square not in G:
+                square_name = chess.square_name(reachable_square)
+                G.add_node(square_name)
+                if not color_separated:
+                    G.add_edge(node, square_name)
+                else:
+                    if board.color_at(reachable_square) == chess.WHITE:
+                        G.add_edge(white_node, square_name)
+                    else:
+                        G.add_edge(black_node, square_name)
+
+            G.add_edge(chess.square_name(square), chess.square_name(reachable_square))
+            # edge = G.GetEI(square, reachable_square)
+            # if s_color == color:
+            #     type_dict_edges[edge.GetId()] = "defend"
+            #     G.AddStrAttrDatE(edge.GetId(), "defend", "type")
+            # else:
+            #     type_dict_edges[edge.GetId()] = "attack"
+            #     G.AddStrAttrDatE(edge.GetId(), "attack", "type")
+    # nx.draw_networkx(G)
+    # plt.savefig('net.png')
+    # plt.draw()
+    return G
+
+
+############### SNAP.PY
 
 def create_support_network(board, game_num, move_num, result):
     piece_map = board.piece_map()
@@ -484,7 +602,7 @@ def create_support_network(board, game_num, move_num, result):
     label_dict_nodes = {}
     type_dict_edges = {}
     for square in piece_map:
-        if board.color_at(square): # true = white, false = nig, none = empty
+        if board.color_at(square):  # true = white, false = nig, none = empty
             color = "white"
         else:
             color = "black"
@@ -518,11 +636,13 @@ def create_support_network(board, game_num, move_num, result):
                 type_dict_edges[edge.GetId()] = "attack"
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
-    G.SavePajek("networks/lichess/support_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+    G.SavePajek("networks/lichess/support_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes,
+                NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
     f = open("networks/lichess/support_" + str(game_num) + "-" + str(move_num) + ".net", "a")
     f.write("Result = " + result)
     f.close()
     return G
+
 
 def create_mobility_network(board, game_num, move_num, result):
     piece_map = board.piece_map()
@@ -534,7 +654,7 @@ def create_mobility_network(board, game_num, move_num, result):
     label_dict_nodes = {}
     type_dict_edges = {}
     for square in piece_map:
-        if board.color_at(square): # true = white, false = nig, none = empty
+        if board.color_at(square):  # true = white, false = nig, none = empty
             color = "white"
         else:
             color = "black"
@@ -595,96 +715,97 @@ def create_mobility_network(board, game_num, move_num, result):
                 type_dict_edges[edge.GetId()] = "attack"
                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
 
-    G.SavePajek("networks/lichess/mobility_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+    G.SavePajek("networks/lichess/mobility_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes,
+                NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
     f = open("networks/lichess/mobility_" + str(game_num) + "-" + str(move_num) + ".net", "a")
     f.write("Result = " + result)
     f.close()
     return G
 
 
-def create_position_network(board, game_num, move_num, result, file):
-  #  print(chess.SQUARES[3])
-    piece_map = board.piece_map()
-    G = snap.TNEANet.New()
-    G.AddStrAttrN("color")
-    G.AddStrAttrE("type")
-
-    color_dict_nodes = {}
-    label_dict_nodes = {}
-    type_dict_edges = {}
-
-    for square in piece_map:
-        if board.color_at(square): # true = white, false = nig, none = empty
-            color = "white"
-        else:
-            color = "black"
-
-        reach = board.attacks(square)
-        if not G.IsNode(square):
-            label_dict_nodes[square] = str(square)
-            color_dict_nodes[square] = color
-            G.AddNode(square)
-            G.AddStrAttrDatN(square, color, "color")
-
-        # dont count sideways pawn attacks if there are no pieces there
-        if board.piece_at(square).piece_type == chess.PAWN:
-            reach_c = reach.copy()
-            for reachable_square in reach:
-                if board.color_at(reachable_square) is None:
-                    reach_c.remove(reachable_square)
-            reach = reach_c
-
-        # pawn movement
-        if board.piece_at(square).piece_type == chess.PAWN:
-            sqr = chess.square_name(square)
-            for move in board.legal_moves:
-                if chess.square_name(move.from_square) == sqr: # and move.to_square not in reach:
-                    reach.add(move.to_square)
-
-            board.turn = not board.turn # legalne poteze dobi samu stran na potezi, zatu obrnem kdu je na vrsti
-            for move in board.legal_moves:
-                if chess.square_name(move.from_square) == sqr: # and move.to_square not in reach:
-                    reach.add(move.to_square)
-            board.turn = not board.turn
-
-        for reachable_square in reach:
-            if board.color_at(reachable_square) is None:
-                s_color = "none"
-            elif board.color_at(reachable_square):
-                s_color = "white"
-            else:
-                s_color = "black"
-
-            if not G.IsNode(reachable_square):
-                label_dict_nodes[reachable_square] = str(reachable_square)
-                color_dict_nodes[reachable_square] = s_color
-                G.AddNode(reachable_square)
-                G.AddStrAttrDatN(reachable_square, s_color, "color")
-
-            G.AddEdge(square, reachable_square)
-            edge = G.GetEI(square, reachable_square)
-            if s_color == color:
-                type_dict_edges[edge.GetId()] = "defend"
-                G.AddStrAttrDatE(edge.GetId(), "defend", "type")
-            else:
-                type_dict_edges[edge.GetId()] = "attack"
-                G.AddStrAttrDatE(edge.GetId(), "attack", "type")
-
-    G.SavePajek("networks/"+file+"/position_" + str(game_num) + "-" + str(move_num) + ".net", NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
-    f = open("networks/"+file+"/position_" + str(game_num) + "-" + str(move_num) + ".net", "a")
-    f.write("Result = " + result)
-    f.close()
-    return G
-
+# def create_position_network(board, game_num, move_num, result, file):
+#     #  print(chess.SQUARES[3])
+#     piece_map = board.piece_map()
+#     G = snap.TNEANet.New()
+#     G.AddStrAttrN("color")
+#     G.AddStrAttrE("type")
+#
+#     color_dict_nodes = {}
+#     label_dict_nodes = {}
+#     type_dict_edges = {}
+#
+#     for square in piece_map:
+#         if board.color_at(square):  # true = white, false = nig, none = empty
+#             color = "white"
+#         else:
+#             color = "black"
+#
+#         reach = board.attacks(square)
+#         if not G.IsNode(square):
+#             label_dict_nodes[square] = str(square)
+#             color_dict_nodes[square] = color
+#             G.AddNode(square)
+#             G.AddStrAttrDatN(square, color, "color")
+#
+#         # dont count sideways pawn attacks if there are no pieces there
+#         if board.piece_at(square).piece_type == chess.PAWN:
+#             reach_c = reach.copy()
+#             for reachable_square in reach:
+#                 if board.color_at(reachable_square) is None:
+#                     reach_c.remove(reachable_square)
+#             reach = reach_c
+#
+#         # pawn movement
+#         if board.piece_at(square).piece_type == chess.PAWN:
+#             sqr = chess.square_name(square)
+#             for move in board.legal_moves:
+#                 if chess.square_name(move.from_square) == sqr:  # and move.to_square not in reach:
+#                     reach.add(move.to_square)
+#
+#             board.turn = not board.turn  # legalne poteze dobi samu stran na potezi, zatu obrnem kdu je na vrsti
+#             for move in board.legal_moves:
+#                 if chess.square_name(move.from_square) == sqr:  # and move.to_square not in reach:
+#                     reach.add(move.to_square)
+#             board.turn = not board.turn
+#
+#         for reachable_square in reach:
+#             if board.color_at(reachable_square) is None:
+#                 s_color = "none"
+#             elif board.color_at(reachable_square):
+#                 s_color = "white"
+#             else:
+#                 s_color = "black"
+#
+#             if not G.IsNode(reachable_square):
+#                 label_dict_nodes[reachable_square] = str(reachable_square)
+#                 color_dict_nodes[reachable_square] = s_color
+#                 G.AddNode(reachable_square)
+#                 G.AddStrAttrDatN(reachable_square, s_color, "color")
+#
+#             G.AddEdge(square, reachable_square)
+#             edge = G.GetEI(square, reachable_square)
+#             if s_color == color:
+#                 type_dict_edges[edge.GetId()] = "defend"
+#                 G.AddStrAttrDatE(edge.GetId(), "defend", "type")
+#             else:
+#                 type_dict_edges[edge.GetId()] = "attack"
+#                 G.AddStrAttrDatE(edge.GetId(), "attack", "type")
+#
+#     G.SavePajek("networks/" + file + "/position_" + str(game_num) + "-" + str(move_num) + ".net",
+#                 NIdLabelH=label_dict_nodes, NIdColorH=color_dict_nodes, EIdColorH=type_dict_edges)
+#     f = open("networks/" + file + "/position_" + str(game_num) + "-" + str(move_num) + ".net", "a")
+#     f.write("Result = " + result)
+#     f.close()
+#     return G
+#
 
 def create_dummy():
-
     G = create_placement_network()
 
-    fen1 = "8/6k1/5pp1/3Q4/6K1/8/8/8 w - - 0 1" # 1-0
-    fen2 = "8/8/3p1k2/4b3/2Q5/3KP3/8/8 w - - 0 1" # 1-0
-    fen3 = "8/Q7/3p1k2/4b1pp/8/3K4/8/1R6 w - - 0 1" # 1-0
-    fen4 = "8/4k3/8/2q5/8/5N2/4P1K1/8 w - - 0 1" # 0-1
+    fen1 = "8/6k1/5pp1/3Q4/6K1/8/8/8 w - - 0 1"  # 1-0
+    fen2 = "8/8/3p1k2/4b3/2Q5/3KP3/8/8 w - - 0 1"  # 1-0
+    fen3 = "8/Q7/3p1k2/4b1pp/8/3K4/8/1R6 w - - 0 1"  # 1-0
+    fen4 = "8/4k3/8/2q5/8/5N2/4P1K1/8 w - - 0 1"  # 0-1
 
     board1 = chess.Board(fen1)
     board2 = chess.Board(fen2)
@@ -743,3 +864,21 @@ def create_dummy():
     with open(os.path.join("output/", "embeddings"), 'rb') as file:
         r = pickle.load(file)
     print(r)
+
+
+def test():
+    fen1 = "8/6k1/5pp1/3Q4/6K1/8/8/8 w - - 0 1"  # 1-0
+    fen2 = "8/8/3p1k2/4b3/2Q5/3KP3/8/8 w - - 0 1"  # 1-0
+    fen3 = "8/Q7/3p1k2/4b1pp/8/3K4/8/1R6 w - - 0 1"  # 1-0
+    fen4 = "8/4k3/8/2q5/8/5N2/4P1K1/8 w - - 0 1"  # 0-1
+
+    board1 = chess.Board(fen1)
+    board2 = chess.Board(fen2)
+    board3 = chess.Board(fen3)
+    board4 = chess.Board(fen4)
+
+    boards = [board1, board2, board3, board4]
+    results = [1, 1, 1, -1]
+
+    board_node = 0
+    create_position_network(board1, board_node, color_separated=True)

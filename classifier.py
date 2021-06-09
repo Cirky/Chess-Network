@@ -31,6 +31,11 @@ class logistic_regression:
             raise RuntimeError("No trained classifier")
         return self.trained_classifier.score(X, y)
 
+    def get_probabilities(self, X):
+        if self.trained_classifier is None:
+            raise RuntimeError("No trained classifier")
+        return self.trained_classifier.predict_proba(X)
+
     def cross_validate(self, X, y, k=5, output=False):
         if self.classifier is None:
             raise RuntimeError("No classifier")

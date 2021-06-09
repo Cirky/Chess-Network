@@ -69,6 +69,7 @@ def parser(file, elo=400, draws=False):
             elif result == "0-1":
                 results.append("black")
             else:
+                print(result)
                 results.append("draw")
 
     for offset in offsets:
