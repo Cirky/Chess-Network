@@ -175,7 +175,10 @@ def save_game_data(games, results, filename):
         pickle.dump({"games": games, "results": results}, file)
 
 
-def load_game_data(filename):
-    with open(os.path.join("output", filename), 'rb') as file:
+def load_game_data(filename, path="output", max_games=None):
+    with open(os.path.join(path, filename), 'rb') as file:
         data = pickle.load(file)
-    return data["games"], data["results"]
+    if max_games is not None and len(data["games"]) > max_games:
+        return data["games"][:max_games], data["results"][:max_games]
+    else:
+        return data["games"], data["results"]

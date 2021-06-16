@@ -16,6 +16,10 @@ class Log:
     WEIGHTED = "Weighted"
     MULTIPLE = "Multiple"
     ML_ALG = "ML Alg."
+    MAX_GAMES = "Max Games"
+    POSITIONS = "N Positions"
+    K = "K"
+    WALK_LENGTH = "Walk Length"
 
     def __init__(self, path="logs", filename="log.txt"):
         self.filename = os.path.join(path, filename)
