@@ -20,6 +20,7 @@ class Log:
     POSITIONS = "N Positions"
     K = "K"
     WALK_LENGTH = "Walk Length"
+    TIME = "Time"
 
     def __init__(self, path="logs", filename="log.txt"):
         self.filename = os.path.join(path, filename)
@@ -47,3 +48,8 @@ class Log:
                 f.write("\n")
         except IOError:
             print("Error opening log")
+
+def delog(filename, path="output"):
+    with open(os.path.join(path, filename), 'r') as file:
+        for line in file:
+            params = line.strip().split(';')

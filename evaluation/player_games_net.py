@@ -9,8 +9,8 @@ from classic_evaluations import *
 from logger import *
 
 game_data_file = "games_2700_2019"
-num_walks_list = [100, 300, 500]
-last_moves_percentage_list = [0.001, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+num_walks_list = [100, 200, 300]
+last_moves_percentage_list = [0.001, 0.05, 0.1, 0.2, 0.3]
 max_games = 5000
 num_walks = 200
 last_moves_percentage = 0.05
@@ -35,7 +35,7 @@ def evaluate_algorithm(games, results, algorithm, color_separated):
             print("Num of positions:", len(X))
 
             start = time.time()
-            clf = neural_network()
+            clf = logistic_regression()
             scores = clf.cross_validate(X, y, k=k, output=True)
             print("Cross Validation took:", time.time() - start)
 
@@ -43,7 +43,6 @@ def evaluate_algorithm(games, results, algorithm, color_separated):
                       (log.LAST_MOVES, last_moves_percentage),
                       (log.ML_ALG, clf.get_name()),
                       log.COLOR_SEPARATED,
-                      log.MULTIPLE,
                       (log.WALKS, num_walks),
                       (log.POSITIONS, len(X)),
                       (log.WALK_LENGTH, walk_length),
@@ -58,7 +57,7 @@ def evaluate_algorithm(games, results, algorithm, color_separated):
 games, results = load_game_data(game_data_file, path="../output", max_games=max_games)
 evaluate_algorithm(games, results, create_metaposition_network, color_separated=False)
 evaluate_algorithm(games, results, create_metaposition_network, color_separated=True)
-evaluate_algorithm(games, results, create_combined_metaposition_network, color_separated=True)
+# evaluate_algorithm(games, results, create_combined_metaposition_network, color_separated=True)
 
 #
 # s = time.time()

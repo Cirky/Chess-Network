@@ -1,0 +1,4 @@
+2021/06/16 11:44:29;Game Data;games_2700_2019;Perc. of last moves;0.001;ML Alg.;neural network;Color Separated;;Walks;100;N Positions;4992;Walk Length;2;Max Games;5000;K;5;Accuracy;0.641423587916574;Std. Dev.;0.012151096553687032;
+2021/06/16 11:55:01;Game Data;games_2700_2019;Perc. of last moves;0.05;ML Alg.;neural network;Color Separated;;Walks;100;N Positions;22271;Walk Length;2;Max Games;5000;K;5;Accuracy;0.6453227580903078;Std. Dev.;0.014330264904345065;
+2021/06/16 12:12:56;Game Data;games_2700_2019;Perc. of last moves;0.1;ML Alg.;neural network;Color Separated;;Walks;100;N Positions;42036;Walk Length;2;Max Games;5000;K;5;Accuracy;0.6319107745946386;Std. Dev.;0.012655235203265974;
+
