@@ -28,7 +28,7 @@ plt.errorbar(algs[1][0], algs[1][1], algs[1][2], linestyle="--", marker='v', mar
 plt.errorbar(algs[2][0], algs[2][1], algs[2][2], linestyle="--", marker='o', markersize="6", label="Naive Bayes", linewidth=0.8)
 plt.errorbar(algs[3][0], algs[3][1], algs[4][2], linestyle="--", marker='D', markersize="6", label="Random forest", linewidth=0.8)
 plt.errorbar(algs[4][0], algs[4][1], algs[4][2], linestyle="--", marker='*', markersize="6", label="Decision tree", linewidth=0.8)
-plt.errorbar(algs[5][0], algs[5][1], algs[5][2], linestyle="--", marker='s', markersize="6", label="Naural Networks", linewidth=0.8)
+plt.errorbar(algs[5][0], algs[5][1], algs[5][2], linestyle="--", marker='s', markersize="6", label="Neural Networks", linewidth=0.8)
 plt.xticks(algs[0][0], labels=xlabels)
 plt.ylim([0.6, 0.92])
 plt.legend()
