@@ -63,8 +63,8 @@ class svm(Classifier):
     classifier = None
     trained_classifier = None
 
-    def __init__(self):
-        self.classifier = make_pipeline(StandardScaler(), SVC(gamma='auto'))
+    def __init__(self, max_iter=10000):
+        self.classifier = make_pipeline(StandardScaler(), SVC(gamma='auto', max_iter=max_iter))
 
     def get_name(self):
         return "SVM"
