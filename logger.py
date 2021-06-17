@@ -6,6 +6,7 @@ class Log:
     filename = None
     separator = ";"
     GAME_DATA = "Game Data"
+    ALGORITHM = "Algorithm"
     WALKS = "Walks"
     LAST_MOVES = "Perc. of last moves"
     COLOR_SEPARATED = "Color Separated"

@@ -1,0 +1,5 @@
+2021/06/17 22:25:42;Game Data;games_2700_2019;Perc. of last moves;0.001;Algorithm;Shannon;ML Alg.;logistic regression;N Positions;4992;Max Games;5000;K;5;Accuracy;0.8828098639721886;Std. Dev.;0.009620173186722767;
+2021/06/17 22:25:50;Game Data;games_2700_2019;Perc. of last moves;0.05;Algorithm;Shannon;ML Alg.;logistic regression;N Positions;22271;Max Games;5000;K;5;Accuracy;0.8051269971581302;Std. Dev.;0.010654712889755254;
+2021/06/17 22:26:02;Game Data;games_2700_2019;Perc. of last moves;0.1;Algorithm;Shannon;ML Alg.;logistic regression;N Positions;42036;Max Games;5000;K;5;Accuracy;0.7811394654696818;Std. Dev.;0.012755927752956022;
+2021/06/17 22:26:23;Game Data;games_2700_2019;Perc. of last moves;0.2;Algorithm;Shannon;ML Alg.;logistic regression;N Positions;81516;Max Games;5000;K;5;Accuracy;0.7463071278596323;Std. Dev.;0.01681578836401625;
+2021/06/17 22:26:53;Game Data;games_2700_2019;Perc. of last moves;0.3;Algorithm;Shannon;ML Alg.;logistic regression;N Positions;121619;Max Games;5000;K;5;Accuracy;0.7194186236360733;Std. Dev.;0.018357294341697798;

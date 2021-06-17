@@ -150,7 +150,7 @@ def evaluate_ml(games, results, algorithm, color_separated):
         print()
 
 
-games, results = load_game_data(game_data_file, path="../output/graphs", max_games=max_games)
+games, results = load_game_data(game_data_file, path="../output", max_games=max_games)
 evaluate_ml(games, results, create_combined_metaposition_network, color_separated=True)
 
 #
