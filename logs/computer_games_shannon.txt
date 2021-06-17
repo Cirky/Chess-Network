@@ -3,3 +3,8 @@
 2021/06/17 22:37:52;Game Data;chess-engines;Perc. of last moves;0.1;Algorithm;Shannon;ML Alg.;logistic regression;N Positions;64632;Max Games;5000;K;5;Accuracy;0.8357774834371771;Std. Dev.;0.015160842258183817;
 2021/06/17 22:38:21;Game Data;chess-engines;Perc. of last moves;0.2;Algorithm;Shannon;ML Alg.;logistic regression;N Positions;126724;Max Games;5000;K;5;Accuracy;0.8062954818828449;Std. Dev.;0.012777729957027407;
 2021/06/17 22:39:03;Game Data;chess-engines;Perc. of last moves;0.3;Algorithm;Shannon;ML Alg.;logistic regression;N Positions;189401;Max Games;5000;K;5;Accuracy;0.7802704594533199;Std. Dev.;0.009983342129521514;
+2021/06/17 23:54:15;Game Data;chess-engines;Perc. of last moves;0.001;Algorithm;Shannon;ML Alg.;neural network;N Positions;5000;Max Games;5000;K;5;Accuracy;0.8912000000000001;Std. Dev.;0.009495261976375383;
+2021/06/17 23:54:35;Game Data;chess-engines;Perc. of last moves;0.05;Algorithm;Shannon;ML Alg.;neural network;N Positions;33567;Max Games;5000;K;5;Accuracy;0.8477959370933229;Std. Dev.;0.01735690300649093;
+2021/06/17 23:55:07;Game Data;chess-engines;Perc. of last moves;0.1;Algorithm;Shannon;ML Alg.;neural network;N Positions;64632;Max Games;5000;K;5;Accuracy;0.8367522497851244;Std. Dev.;0.015068360967379279;
+2021/06/17 23:56:00;Game Data;chess-engines;Perc. of last moves;0.2;Algorithm;Shannon;ML Alg.;neural network;N Positions;126724;Max Games;5000;K;5;Accuracy;0.8070530489223463;Std. Dev.;0.012481014386093016;
+2021/06/17 23:57:18;Game Data;chess-engines;Perc. of last moves;0.3;Algorithm;Shannon;ML Alg.;neural network;N Positions;189401;Max Games;5000;K;5;Accuracy;0.7811521906803852;Std. Dev.;0.010189776954486597;
