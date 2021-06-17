@@ -21,6 +21,7 @@ class Log:
     K = "K"
     WALK_LENGTH = "Walk Length"
     TIME = "Time"
+    COMBINED = "Combined"
 
     def __init__(self, path="logs", filename="log.txt"):
         self.filename = os.path.join(path, filename)
@@ -49,7 +50,16 @@ class Log:
         except IOError:
             print("Error opening log")
 
-def delog(filename, path="output"):
+
+def delog(filename, path="logs"):
+    dataset = []
     with open(os.path.join(path, filename), 'r') as file:
         for line in file:
-            params = line.strip().split(';')
+            data = {}
+            dataset.append(data)
+            params = line.strip().split(';')[:-1]
+            data["date"] = params[0]
+            # print(params)
+            for i in range(1, len(params), 2):
+                data[params[i]] = params[i + 1]
+    return dataset
