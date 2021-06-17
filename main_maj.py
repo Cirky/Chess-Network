@@ -21,7 +21,7 @@ sys.setrecursionlimit(100000)
 
 #games_file = "karpov"
 games_file = "chess-engines"
-p = 0.1
+p = 0.001
 num_walks = 200
 games, results = load_game_data(games_file)
 num_of_games = 10000
@@ -37,16 +37,16 @@ G, all_results = create_combined_metaposition_network(games, results, color_sepa
 embeddings = metaposition_node2vec(G, all_results, color_separated=True, num_walks=num_walks, dimensions=300)
 
 X, y = parse_embeddings(embeddings)
-clf = neural_network()
+clf = logistic_regression()
 
-scores = clf.cross_validate(X, y, k=10, output=True)
+scores = clf.cross_validate(X, y, k=5, output=True)
 #print(clf.cross_validate(X, y, k=5, output=True))
 
 
 s = time.time()
 X, y = shannon(games, results, last_moves_percentage=p)
 print("Shannon:", time.time() - s)
-print(clf.cross_validate(X, y, k=10, output=True))
+print(clf.cross_validate(X, y, k=5, output=True))
 
 log = Log(filename="log_maj.txt")
 log.write((log.GAME_DATA, games_file),
