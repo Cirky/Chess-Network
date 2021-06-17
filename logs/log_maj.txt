@@ -76,3 +76,8 @@
 2021/06/16 22:49:33;Game Data;chess-engines;Number of games;1;Perc. of last moves;0.05;Color Separated;;Walks;300;Classifier;logistic regression;Accuracy;nan;Std. Dev.;nan;
 2021/06/16 23:07:42;Game Data;chess-engines;Number of games;10000;Perc. of last moves;0.001;Color Separated;;Walks;300;Classifier;logistic regression;Accuracy;0.8996999999999999;Std. Dev.;0.012355565547557918;
 2021/06/16 23:15:03;Game Data;chess-engines;Number of games;10000;Perc. of last moves;0.001;Color Separated;;Walks;200;Classifier;logistic regression;Accuracy;0.8832000000000001;Std. Dev.;0.006772001181334805;
+2021/06/17 18:41:45;Game Data;chess-engines;Number of games;10000;Perc. of last moves;0.001;Color Separated;;Walks;200;Classifier;logistic regression;Accuracy;0.8832000000000001;Std. Dev.;0.006772001181334805;
+2021/06/17 18:47:55;Game Data;chess-engines;Number of games;10000;Perc. of last moves;0.001;Color Separated;;Walks;200;Classifier;logistic regression;Accuracy;0.8934999999999998;Std. Dev.;0.008994442728707574;
+2021/06/17 18:59:35;Game Data;chess-engines;Number of games;10000;Perc. of last moves;0.001;Color Separated;True;Walks;200;Classifier;logistic regression;Accuracy;0.8984;Std. Dev.;0.01042784733298298;
+2021/06/17 19:09:38;Game Data;chess-engines;Number of games;10000;Perc. of last moves;0.001;Color Separated;True;Walks;200;Classifier;neural network;Accuracy;0.9033;Std. Dev.;0.011838918869559005;
+2021/06/17 19:16:27;Game Data;chess-engines;Number of games;10000;Perc. of last moves;0.001;Color Separated;True;Walks;200;Classifier;neural network;Accuracy;0.8755;Std. Dev.;0.003701351104664341;

@@ -297,6 +297,7 @@ def create_combined_metaposition_network(games, results, progress=False, directe
                                          color_separated=False, last_moves_percentage=1):
     G = create_placement_network(directed, multigraph=True)
     G = add_attack_network(G)
+    G = add_defence_network(G)
 
     all_results = []
     game_num = 0
@@ -416,6 +417,20 @@ def add_attack_network2(G):
                 for number in [1, 2, 3, 4, 5, 6, 7, 8]:
                     square_name = char + str(number)
                     G.add_node(piece + "->" + piece2 + square_name)
+    return G
+
+def add_defence_network(G):
+    for piece in ["K", "Q", "R", "B", "N", "P"]:
+        for piece2 in ["K", "Q", "R", "B", "N", "P"]:
+            if piece == "K" and piece2 == "K":
+                continue
+            G.add_node(piece + "->" + piece2)
+
+    for piece in ["k", "q", "r", "b", "n", "p"]:
+        for piece2 in ["k", "q", "r", "b", "n", "p"]:
+            if piece == "k" and piece2 == "k":
+                continue
+            G.add_node(piece + "->" + piece2)
     return G
 
 

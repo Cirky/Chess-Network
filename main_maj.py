@@ -33,11 +33,11 @@ num_of_games = 10000
 
 games = games[:num_of_games]
 
-G, all_results = create_combined_metaposition_network(games, results, color_separated=True, last_moves_percentage=p)
+G, all_results = create_metaposition_network(games, results, color_separated=True, last_moves_percentage=p)
 embeddings = metaposition_node2vec(G, all_results, color_separated=True, num_walks=num_walks, dimensions=300)
 
 X, y = parse_embeddings(embeddings)
-clf = logistic_regression()
+clf = neural_network()
 
 scores = clf.cross_validate(X, y, k=5, output=True)
 #print(clf.cross_validate(X, y, k=5, output=True))
@@ -52,7 +52,7 @@ log = Log(filename="log_maj.txt")
 log.write((log.GAME_DATA, games_file),
           ("Number of games", num_of_games),
           (log.LAST_MOVES, p),
-          log.COLOR_SEPARATED,
+          (log.COLOR_SEPARATED, "True"),
           (log.WALKS, num_walks),
           ("Classifier", clf.get_name()),
           (log.ACCURACY, scores.mean()),
