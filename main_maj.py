@@ -23,9 +23,9 @@ sys.setrecursionlimit(100000)
 #games_file = "karpov"
 games_file = "chess-engines"
 p = 0.001
-num_walks = 200
+num_walks = 500
 games, results = load_game_data(games_file)
-num_of_games = 50000
+num_of_games = 10000
 boards = []
 
 #print(results)

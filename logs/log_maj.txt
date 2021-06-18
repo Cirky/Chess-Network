@@ -89,3 +89,4 @@
 2021/06/17 22:24:14;Game Data;chess-engines;Number of games;20000;Perc. of last moves;0.001;Color Separated;True;Walks;200;Classifier;neural network;Accuracy;0.9153;Std. Dev.;0.002657066051117272;
 2021/06/17 22:39:35;Game Data;chess-engines;Number of games;20000;Perc. of last moves;0.001;Color Separated;True;Walks;200;Classifier;logistic regression;Accuracy;0.9032;Std. Dev.;0.004319722213291022;
 2021/06/17 23:24:36;Game Data;chess-engines;Number of games;50000;Perc. of last moves;0.001;Color Separated;True;Walks;200;Classifier;neural network;Accuracy;0.91916;Std. Dev.;0.007355977161465369;
+2021/06/18 10:30:55;Game Data;chess-engines;Number of games;10000;Perc. of last moves;0.001;Color Separated;True;Walks;500;Classifier;neural network;Accuracy;0.9070000000000003;Std. Dev.;0.01209958676980335;
