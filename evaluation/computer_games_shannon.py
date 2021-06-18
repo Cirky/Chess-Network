@@ -22,7 +22,7 @@ def evaluate_shannon(games, results):
         print("Num of positions:", len(X))
 
         start = time.time()
-        clf = neural_network()
+        clf = svm()
         scores = clf.cross_validate(X, y, k=k, output=True)
         elapsed = time.time() - start
         print(clf.get_name(), "Cross Validation took:", elapsed)
