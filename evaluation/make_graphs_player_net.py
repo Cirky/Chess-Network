@@ -33,10 +33,10 @@ print(len(alg1_X), len(alg1_Y), len(alg1_E))
 
 xlabels = ["last move", 0.05, 0.10, 0.20, 0.30]
 
-plt.figure(figsize=(6, 5))
+plt.figure(figsize=(5.6, 5))
 plt.rcParams.update({'font.size': 11})
-plt.xlabel("Moves from end (%)")
-plt.ylabel("Accuracy")
+plt.xlabel("Moves from end")
+plt.ylabel("Accuracy ($\mu \pm \sigma$)")
 plt.errorbar(alg1_X, alg1_Y, alg1_E, linestyle="--", marker='^', markersize="6", label="Metaposition network", linewidth=0.8)
 plt.errorbar(alg2_X, alg2_Y, alg2_E, linestyle="--", marker='o', markersize="6", label="Color separated network", linewidth=0.8)
 plt.errorbar(alg3_X, alg3_Y, alg3_E, linestyle="--", marker='D', markersize="6", label="Color separated advanced network", linewidth=0.8)
