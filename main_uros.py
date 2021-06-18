@@ -17,6 +17,7 @@ from visualization import *
 game_data_file = "games_2700_2019"
 num_walks = 200
 last_moves_percentage = 0.05
+dimensions = 100
 
 games, results = load_game_data(game_data_file)
 print(len(games), Counter(results))
@@ -24,10 +25,10 @@ boards = []
 G, all_results = create_metaposition_network(games, results, color_separated=True, multiple=True,
                                              last_moves_percentage=last_moves_percentage)
 
-embeddings = metaposition_node2vec(G, all_results, color_separated=True, num_walks=num_walks, walk_length=10)
+embeddings = metaposition_node2vec(G, all_results, color_separated=True, num_walks=num_walks, walk_length=10,
+                                   dimensions=dimensions)
 
 X, y = parse_embeddings(embeddings)
-print(Counter(y))
 # print(len(X), len(y))
 
 clf = logistic_regression()
@@ -48,18 +49,19 @@ log.write((log.GAME_DATA, game_data_file),
           (log.ML_ALG, clf.get_name()),
           log.COLOR_SEPARATED,
           log.MULTIPLE,
+          ("Dimensions", dimensions),
           # log.WEIGHTED,
           # log.POSITION_NETWORKS,
           (log.WALKS, num_walks),
           (log.ACCURACY, scores.mean()),
           (log.STD_DEV, scores.std()))
 
-s = time.time()
-X, y = shannon(games, results, last_moves_percentage=last_moves_percentage)
-print("Shannon:", time.time() - s)
-
-clf = logistic_regression()
-clf.cross_validate(X, y, k=5, output=True)
+# s = time.time()
+# X, y = shannon(games, results, last_moves_percentage=last_moves_percentage)
+# print("Shannon:", time.time() - s)
+#
+# clf = logistic_regression()
+# clf.cross_validate(X, y, k=5, output=True)
 # clf.train(X, y)
 # print(clf.trained_classifier.classes_)
 # probabilities = clf.get_probabilities(X)

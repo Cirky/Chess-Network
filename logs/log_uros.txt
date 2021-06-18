@@ -1,3 +1,0 @@
-2021/06/09 11:22:22;Game Data;games_2700_2019;Perc. of last moves;0.05;Color Separated;;Weighted;;Walks;200;Accuracy;0.7140992182074999;Std. Dev.;0.01112495867355637;
-2021/06/09 11:41:05;Game Data;games_2700_2019;Perc. of last moves;0.05;Color Separated;;Walks;200;Accuracy;0.7360349452479291;Std. Dev.;0.010592887735235222;
-2021/06/09 14:00:03;Game Data;games_2700_2019;Perc. of last moves;0.05;Color Separated;;Multiple;;Walks;200;Accuracy;0.728981060034666;Std. Dev.;0.01045457507550487;
