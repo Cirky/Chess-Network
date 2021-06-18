@@ -77,7 +77,7 @@ def create_metaposition_network(games, results, progress=False, directed=True, a
     return G, all_results
 
 
-def create_weighted_metaposition_network(games, results, progress=False, color_separated=False, last_moves_percentage=1):
+def create_weighted_metaposition_network(games, results, progress=False, color_separated=False, last_moves_percentage=1, boards=None):
     # start = time.time()
     # games, results = parser(file, elo)
     # print("This took: ", time.time() - start)
@@ -109,6 +109,9 @@ def create_weighted_metaposition_network(games, results, progress=False, color_s
             if last_moves_n > 0:
                 last_moves_n -= 1
                 continue
+
+            if boards is not None:
+                boards.append(board.copy())
 
             all_results.append(result)
             if not color_separated:
@@ -294,7 +297,7 @@ def create_attack_metaposition_network(games, results, progress=False, directed=
 
 
 def create_combined_metaposition_network(games, results, progress=False, directed=True, advanced=False,
-                                         color_separated=False, last_moves_percentage=1):
+                                         color_separated=False, last_moves_percentage=1, boards=None):
     G = create_placement_network(directed, multigraph=True)
     G = add_attack_network(G)
     G = add_defence_network(G)
@@ -317,12 +320,16 @@ def create_combined_metaposition_network(games, results, progress=False, directe
         for _ in game.mainline_moves():
             last_moves_n += 1
         last_moves_n = int(last_moves_n * (1 - last_moves_percentage))
+       # last_moves_n = math.ceil(last_moves_n * (1 - last_moves_percentage))
 
         for move in game.mainline_moves():
             board.push(move)
             if last_moves_n > 0:
                 last_moves_n -= 1
                 continue
+
+            if boards is not None:
+                boards.append(board.copy())
 
             all_results.append(result)
             if not color_separated:
