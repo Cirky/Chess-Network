@@ -129,12 +129,14 @@ dmypy.json
 .pyre/
 
 /data
-/networks/lichess
-/networks/li_new
-
-
-
+/networks
+/boards
+/logs
 
 # Drgac jebe zarad dveh razlicnih python verzij
 .idea
 /output
+main_maj.py
+main_uros.py
+main.py
+code_test.py
